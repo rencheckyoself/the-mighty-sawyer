@@ -1,12 +1,14 @@
 # the-mighty-sawyer
 
 # Getting started [Development]
-Fork the GitHub Classroom repository from [here](https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git).  This means that you are creating a clone of the entire Classroom repo and placing a copy in your own personal GitHub repo; this is called a fork.  You will be mostly working with the fork you have created during development. 
+Fork the GitHub Classroom repository from [here](https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git).  This means that you are creating a clone of the entire Classroom repo and placing a copy in your own personal GitHub repo; this is called a fork.  You will be mostly working with the fork you have created during development.
 
 Once you have forked our official project repo to your personal repo, you can now clone your personal repo to your local machine.
 ```
 git clone https://github.com/<YOUR_USERNAME>/the-mighty-sawyer.git
 ```
+
+You can also use `wstool set` so that your personal repo is added to the .rosinstall file.
 
 To be able to interact with the official GitHub Classroom project repo, we have to take an additional step -- ie. add a remote upstream.
 
@@ -23,7 +25,7 @@ git remote -v
 git remote add upstream https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git
 ```
 
-4. Check whether you did this successfully 
+4. Check whether you did this successfully
 ```
 git remote -v
 > origin	https://github.com/lee-jm/the-mighty-sawyer.git (fetch)
