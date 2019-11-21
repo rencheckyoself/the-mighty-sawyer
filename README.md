@@ -41,6 +41,10 @@ If the `upstream` manages to somehow become ahead of your fork repo, here's how 
 ```
 roscd the-mighty-sawyer
 ```
+or 
+```
+cd ~/catkin_ws/src/the-mighty-sawyer/
+```
 3. Fetch the branches and commits from `upstream`. This step will be store the commits in a local branch, `upstream/master`.
 ```
 git fetch upstream
