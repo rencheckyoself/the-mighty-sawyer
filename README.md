@@ -5,7 +5,7 @@ Fork the GitHub Classroom repository from [here](https://github.com/ME495-Embedd
 
 Once you have forked our official project repo to your personal repo, you can now clone your personal repo to your local machine.
 ```
-git clone https://github.com/<YOUR_USERNAME>/the-mighty-sawyer.git
+git clone https://github.com/YOUR_USERNAME/the-mighty-sawyer.git
 ```
 
 You can also use `wstool set` so that your personal repo is added to the .rosinstall file.
@@ -28,8 +28,8 @@ git remote add upstream https://github.com/ME495-EmbeddedSystems/the-mighty-sawy
 4. Check whether you did this successfully
 ```
 git remote -v
-> origin	https://github.com/lee-jm/the-mighty-sawyer.git (fetch)
-> origin	https://github.com/lee-jm/the-mighty-sawyer.git (push)
+> origin	https://github.com/YOUR_USERNAME/the-mighty-sawyer.git (fetch)
+> origin	https://github.com/YOUR_USERNAME/the-mighty-sawyer.git (push)
 > upstream	https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git (fetch)
 > upstream	https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git (push)
 ```
