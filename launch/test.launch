@@ -1,0 +1,12 @@
+
+<!-- Lauch the gazebo sim or connect to Sawyer-->
+<!-- Launch Joint Action trajectory server -->
+<!-- Launch Sawyer MoveIt config -->
+
+<launch>
+
+  <node name="traj_with_moveit" pkg="the_mighty_sawyer" type="traj_with_moveit" output="screen">
+    <remap from="joint_states" to="robot/joint_states"/>
+  </node>
+
+</launch>
