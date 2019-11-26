@@ -18,6 +18,7 @@ import numpy as np
 import rospy
 import moveit_commander
 
+import intera_interface
 
 import geometry_msgs.msg
 import moveit_msgs.msg
@@ -25,10 +26,16 @@ from std_msgs.msg import String
 
 from moveit_commander.conversions import pose_to_list
 
-
 class MoveArm(object):
 
     def __init__(self):
+
+        # Import Script to Enable/Disable
+        # rs = intera_interface.RobotEnable()
+
+        self.gripper = intera_interface.Gripper('right_gripper')
+
+        self.InitializeGripper()
 
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node('traj_with_moveit', anonymous=True)
@@ -62,8 +69,15 @@ class MoveArm(object):
         print self.robot.get_current_state()
         print "==================================="
 
-        self.box_name = ''
+    def InitializeGripper(self):
+        self.gripper.reboot()
+        self.gripper.calibrate()
 
+    def OpenGripper(self):
+        self.gripper.open()
+
+    def CloseGripper(self):
+        self.gripper.close()
 
     def go_to_recieving_pos(self):
 
@@ -92,7 +106,7 @@ class MoveArm(object):
     def calc_throw_start_pos(self):
         pass
 
-    def go_to_throwing_start(self):
+    def go_to_throwing_start_pose(self):
         pose_goal = geometry_msgs.msg.Pose()
 
         pose_goal.position.x = -.5
@@ -139,12 +153,11 @@ def main():
 
     testing.go_to_recieving_pos()
 
-    testing.go_to_throwing_start()
+    testing.CloseGripper()
 
-    testing.throw()
-    testing.throw()
+    # testing.go_to_throwing_start()
 
-    testing.print_pose()
+    # testing.print_pose()
 
 if __name__ == '__main__':
     try:
