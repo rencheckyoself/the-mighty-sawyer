@@ -5,7 +5,7 @@ from distutils.core import setup
 from catkin_pkg.python_setup import generate_distutils_setup
 
 d = generate_distutils_setup(
-    packages = ['the-mighty-sawyer'],
+    packages = ['the_mighty_sawyer'],
     # scripts = ['scripts/script1.py', 'scripts/script2.py'],
     package_dir={'' : 'src'}
 )

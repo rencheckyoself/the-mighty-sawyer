@@ -10,4 +10,5 @@ def lightweight():
 	pass
 
 if __name__ == "__main__":
-    
+	lightweight()
+	function_x_from_dummy_module1()		# this is a function from dummy_module1

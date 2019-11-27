@@ -11,14 +11,16 @@ find_package(catkin REQUIRED
   COMPONENTS
   actionlib
   cv_bridge
+  gazebo_ros
   geometry_msgs
   joint_state_publisher
+  message_generation
   robot_state_publisher
   roscpp
   rospy
+  rviz
   sensor_msgs
   std_msgs
-  rviz
   urdf
   xacro
 )
@@ -58,19 +60,6 @@ catkin_python_setup()
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
-
-catkin_package(CATKIN_DEPENDS xacro)
-
-catkin_package(
-  CATKIN_DEPENDS
-    actionlib
-    cv_bridge
-    roscpp
-    rospy
-    std_msgs
-  DEPENDS
-    Boost
-)
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
@@ -142,11 +131,26 @@ catkin_package(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+#catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ddrive
 #  CATKIN_DEPENDS joint_state_publisher robot_state_publisher rviz
 #  DEPENDS system_lib
+#)
+
+catkin_package(
+  CATKIN_DEPENDS
+    actionlib
+    cv_bridge
+    geometry_msgs
+    joint_state_publisher
+    robot_state_publisher
+    roscpp
+    rospy
+    rviz
+    sensor_msgs
+    std_msgs
+    xacro
 )
 
 ###########
@@ -162,7 +166,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/imp_nav.cpp
+#   src/${PROJECT_NAME}/the_mighty_sawyer.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -199,10 +203,14 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(PROGRAMS
+  nodes/dummy_node1
+  scripts/beanbag_handoff
+  scripts/pub_locate_board
+  scripts/sub_locate_board
+  scripts/throwing_beanbag
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -219,7 +227,7 @@ include_directories(
 # )
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
+#  install(DIRECTORY include/${PROJECT_NAME}/
 #   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 #   FILES_MATCHING PATTERN "*.h"
 #   PATTERN ".svn" EXCLUDE

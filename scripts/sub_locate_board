@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+"""	We may opt to just launch usb_cam node rather than make our own 
+
+Subscriber:
+	Camera stream - image_raw
+"""
+
+import rospy
+
+def main():
+	rospy.initnode("locate_board_sub" anonymous=True)
+	
+	#== subscribe to image_raw
+	# <remap from="image" to="/usb_cam/image_raw" />
+	rospy.Subscriber("/image", Pose, self.image_callback)
+
+def image_callback(self):
+	pass
+
+if __name__ == "__main__":
+	try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
