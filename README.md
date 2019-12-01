@@ -1,6 +1,68 @@
 # the-mighty-sawyer
 
-# Development
+# Project Overview
+> What you're looking at is a ghost, once alive but now deceased. Once upon a time, it was a cornhole stadium that housed a professional cornhole league club known as the Evanston Zephyrs. Now it houses nothing but memories and a wind that stirs in the high grass of what was once an outfield, a wind that sometimes bears a faint, ghostly resemblance to the roar of a crowd that once sat here. We're back in time now, when the Evanston Zephyrs were still a part of the American League, and this mausoleum of memories was an honest-to-Pete stadium. But since this is strictly a story of make believe, it has to start this way: once upon a time, in Evanston, Illinois, it was tryout day. And though he's not yet on the field, you're about to meet a most unusual fella, a one-armed player named Sawyer. (adapted from the opening narration of the _The Twilight Zone_ episode ["The Mighty Casey"](https://en.wikipedia.org/wiki/The_Mighty_Casey))
+
+This project includes three major parts:
+1. [Computer vision](#computer-vision)
+2. [Throwing](#throwing)
+3. [Manipulation](#manipulation)
+
+# Package layout:
+```
+the-mighty-sawyer/
+	|- action/
+	|- config/
+	|- doc/
+		|- conf.py
+		|- index.rst
+	|- launch/
+	|- msg/
+	|- nodes/
+		|- traj_with_moveit
+		|- traj_with_sawyer
+	|- rviz/
+	|- scripts/
+	|- src/
+		|- the_mighty_sawyer/
+			|- __init__.py
+	|- srv/
+	|- test/
+	|- CMakeLists.txt
+	|- README.md
+	|- package.xml
+	|- setup.py
+```
+
+# Submitted code:
+
+
+# Instructions to run code
+General ROS directions:
+1. Set up workspace and clone repo:
+```
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/src
+git clone https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git
+```
+2. catkin and source
+```
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+```
+3. Launching project
+```
+roslaunch the_mighty_sawyer <Project_Launch_Filename>.launch
+```
+
+# Computer Vision
+
+# Throwing
+
+# Manipulation
+
+# Development Notes
 ## Getting started
 Fork the GitHub Classroom repository from [here](https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git).  This means that you are creating a clone of the entire Classroom repo and placing a copy in your own personal GitHub repo; this is called a fork.  You will be mostly working with the fork you have created during development.
 
@@ -62,3 +124,5 @@ If you notice a "fast-forward" that just means you have not had any unique local
 ```
 git push -u origin master
 ```
+
+# References
