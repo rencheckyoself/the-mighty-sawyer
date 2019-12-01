@@ -10,8 +10,10 @@ project(the_mighty_sawyer)
 find_package(catkin REQUIRED 
   COMPONENTS
   actionlib
+  actionlib_msgs
   cv_bridge
   gazebo_ros
+  genmsg
   geometry_msgs
   joint_state_publisher
   message_generation
@@ -83,10 +85,13 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  actionlib_msgs
+  geometry_msgs
+  sensor_msgs
+  std_msgs  # Or other packages containing msgs
+)
 
 ## Generate .world, .urdf files from xacro files
 
