@@ -14,17 +14,17 @@ the-mighty-sawyer/
 	|- action/
 	|- config/
 	|- doc/
-	  |- conf.py
-	  |- index.rst
+		|- conf.py
+		|- index.rst
 	|- launch/
 	|- msg/
 	|- nodes/
-	  |- traj_with_moveit
-	  |- traj_with_sawyer
+		|- traj_with_moveit
+		|- traj_with_sawyer
 	|- rviz/
 	|- scripts/
 	|- src/
-	  |- the_mighty_sawyer/
+		|- the_mighty_sawyer/
 			|- __init__.py
 	|- srv/
 	|- test/
