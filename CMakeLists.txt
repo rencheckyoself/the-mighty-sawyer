@@ -7,8 +7,7 @@ project(the_mighty_sawyer)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED 
-  COMPONENTS
+find_package(catkin REQUIRED COMPONENTS
   actionlib
   actionlib_msgs
   cv_bridge
@@ -144,6 +143,7 @@ generate_messages(
 #)
 
 catkin_package(
+  LIBRARIES the_mighty_sawyer
   CATKIN_DEPENDS
     actionlib
     cv_bridge
