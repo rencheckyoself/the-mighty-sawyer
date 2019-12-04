@@ -1,8 +1,8 @@
 #goal definition
-PoseStamped pose_stamped
+geometry_msgs/PoseStamped pose_goal
 ---
 #result definition
-PoseStamped pose_stamped
+geometry_msgs/PoseStamped pose_result
 ---
 #feedback definition
-PoseStamped pose_stamped
+geometry_msgs/PoseStamped pose_feedback

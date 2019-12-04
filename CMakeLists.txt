@@ -63,10 +63,14 @@ catkin_python_setup()
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
+#add_message_files(
+#  FILES
+#  ThrowActionFeedback.msg
+#  ThrowActionGoal.msg
+#  ThrowActionResult.msg
+#  ThrowFeedback.msg
+#  ThrowGoal.msg
+#  ThrowResult.msg
 # )
 
 ## Generate services in the 'srv' folder
@@ -77,11 +81,10 @@ catkin_python_setup()
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_action_files(
+  FILES
+  Throw.action
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -143,12 +146,14 @@ generate_messages(
 #)
 
 catkin_package(
-  LIBRARIES the_mighty_sawyer
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
     actionlib
+    actionlib_msgs
     cv_bridge
     geometry_msgs
     joint_state_publisher
+    message_runtime
     robot_state_publisher
     roscpp
     rospy
@@ -210,9 +215,13 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
   nodes/dummy_node1
+  nodes/traj_with_moveit
+  nodes/traj_with_sawyer
   scripts/beanbag_handoff
   scripts/pub_locate_board
   scripts/sub_locate_board
+  scripts/test_action_server_client
+  scripts/test_action_server_server
   scripts/throwing_beanbag
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

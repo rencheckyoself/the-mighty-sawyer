@@ -49,10 +49,12 @@
   <build_depend>cv_bridge</build_depend>
   <build_depend>gazebo_ros</build_depend>
   <build_depend>gazebo</build_depend>
+  <build_depend>genmsg</build_depend>
   <build_depend>robot_state_publisher</build_depend>
   <build_depend>rviz</build_depend>
   <build_depend>joint_state_publisher</build_depend>
   <build_export_depend>cv_bridge</build_export_depend>
+  <build_export_depend>message_runtime</build_export_depend>
   <build_export_depend>robot_state_publisher</build_export_depend>
   <build_export_depend>joint_state_publisher</build_export_depend>
   <build_export_depend>rviz</build_export_depend>

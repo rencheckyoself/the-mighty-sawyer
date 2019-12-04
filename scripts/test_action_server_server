@@ -1,0 +1,25 @@
+#! /usr/bin/env python
+
+# import roslib
+# roslib.load_manifest('the_mighty_sawyer')
+import rospy
+import actionlib
+
+from the_mighty_sawyer.msg import ThrowActionFeedback, ThrowActionGoal, ThrowAction, ThrowActionResult, ThrowFeedback, ThrowGoal, ThrowResult
+
+class ThrowActionServer:
+  def __init__(self):
+    self.throw_as = actionlib.SimpleActionServer(
+      'throw_base', ThrowAction, execute_cb=self.execute_callback, auto_start=False)
+    self.throw_as.start()
+
+  def execute_callback(self, goal):
+    success = True
+    # feedback = 
+    # result = 
+    self.throw_as.set_succeeded()
+
+if __name__ == '__main__':
+  rospy.init_node('throw_action_server')
+  tas = ThrowActionServer()
+  rospy.spin()
