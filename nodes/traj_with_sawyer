@@ -27,19 +27,15 @@ def main():
 
     testing.OpenGripper()
 
-    rospy.sleep(1)
-
     testing.go_to_recieving_pos()
-
-    rospy.sleep(3)
 
     testing.CloseGripper()
 
-    rospy.sleep(3)
+    rospy.sleep(1)
 
     testing.go_to_throwing_start()
 
-    rospy.sleep(3)
+    rospy.sleep(1)
 
     testing.throw()
 
