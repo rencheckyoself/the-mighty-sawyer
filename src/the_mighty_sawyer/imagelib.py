@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import rospy
 import sys
 from intera_core_msgs.srv._IOComponentCommandSrv import IOComponentCommandSrv

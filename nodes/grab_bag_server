@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+"""
+TODO import srv correctly
+TODO add srv to cmake
+TODO way to set team
+TODO inspect oject data
+"""
+import rospy
+from imagelib import switch_camera
+from the-mighty-sawyer.srv import GrabBag
+from std_msgs.msg import Bool, Float32MultiArray
+
+class GrabBagServer(object):
+    """
+    """
+
+    def __init__(self):
+        self.bag_present = False
+        self.present_count = 0
+        self.team = 'red'
+        self.present_thresh = 5
+        self.sub_find_object = rospy.Subscriber('objects', Float32MultiArray, self.find_object_callback)
+        self.grab_bag = rospy.Service('grab_bag', GrabBag, self.grab_bag_callback)
+
+
+    def grab_bag_callback(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+
+        switch_camera('arm')
+
+        while self.present_count < self.present_thresh:
+            pass
+
+
+
+        switch_camera('head')
+
+        return True
+
+    def find_object_callback(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+
+        obj = data[0][0] # TODO inspect to make sure this is correct
+
+        if self.team in obj:
+            self.obj_count += 1
+        else:
+            self.obj_count = 0
+
+
+
+def main():
+    """ The main() function. """
+    rospy.init_node('grab_bag_server')
+    myGrabBagServer = GrabBagServer()
+    rospy.spin()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
+
+

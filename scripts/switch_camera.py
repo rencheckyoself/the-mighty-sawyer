@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+
 import sys
-from imagelib
+import imagelib
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
