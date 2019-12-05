@@ -6,8 +6,8 @@ TODO way to set team
 TODO inspect oject data
 """
 import rospy
-from imagelib import switch_camera
-from the-mighty-sawyer.srv import GrabBag
+from the_mighty_sawyer import imagelib
+# from the-mighty-sawyer.srv import GrabBag
 from std_msgs.msg import Bool, Float32MultiArray
 
 class GrabBagServer(object):

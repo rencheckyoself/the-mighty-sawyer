@@ -21,7 +21,7 @@ class CameraConverter(object):
     def __init__(self):
 
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/io/internal_camera/right_hand_camera/image_raw", Image, self.image_callback)
+        self.image_sub = rospy.Subscriber("/io/internal_camera/right_hand_camera/image_rect", Image, self.image_callback)
         self.image_pub = rospy.Publisher("image_converted", Image, queue_size=10)
 
 
