@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+""" Given that it is in the correct state, this node checks whether a person is handing a beanbag 
+	and executes gripping
+
+Services:
+	
+
+Subscribers:
+	sub_state - subscribes to /robot_state, particularly if robot_state == state2 ("throwing")
+	sub_robot_pose - subscribes to /robot_pose
+	sub_joint_states - subscribes to /robot_joint_states
+	sub_board_pose - subscribes to /board_pose 
+
+Publishers:
+	pub_joint_cmd - publishes joint commands to /some_joint_cmd_topic
+	pub_eef_cmd (optional) - publishes eef commands to /some_eef_cmd_topic 
+	pub_throwing_ready (Msg/Srv?) - publishes whether robot is ready to throw
+
+"""
+
+import rospy
+from std_msgs.msg import Duration, String
+from geometry_msgs.msg import Pose
+
+def ThrowingBeanbag(object):
+	def __init__(self):
+		rospy.init_node("throwing_beanbag")
+		
+		self.sub_state = rospy.Subscriber("/robot_state", String, self.robot_state_callback)
+		self.sub_robot_pose = rospy.Subscriber("/some_gripper_state_topic", SomeType, self.robot_pose_callback)
+		self.sub_joint_states = rospy.Subscriber("/some_joint_states_topic", SomeType, self.joint_states_callback)
+		self.sub_board_pose = rospy.Subscriber("/some_board_pose_topic", Pose, self.board_pose_callback)
+
+		self.pub_throwing_ready = rospy.Publisher("/some_topic", String, queue_size=10)
+		self.pub_joint_cmd = rospy.Publisher("/some_joint_cmd_topic", SomeType, queue_size=10)
+		self.pub_eef_cmd = rospy.Publisher("/some_eef_cmd_topic", SomeType, queue_size=10)
+
+	def robot_state_callback(self, event):
+		"""
+		check if current robot_state == state1 ("handoff"), 
+		if so: search_for_beanbag() and inspect_beanbag_color()
+		"""
+		return None
+
+	def joint_states_callback(self, event):
+		"""
+		To take action when bag present
+		"""
+		return None
+
+	def robot_pose_callback(self, event):
+		"""
+		Get current robot pose estimations
+		"""
+		return None
+
+	def board_pose_callback(self, event):
+		"""
+		Get current board pose estimations
+		"""
+		return None
+
+
+def orient_robot_for_throwing(robot_pose, board_pose):
+	"""
+	once bag is grasped, use robot & board pose estimations to adjust robot orientation
+	(To be moved to subpackages)
+	"""
+	pass
+
+def orient_robot_starting_position():
+	"""
+	put robot in starting position for throwing
+	(To be moved to subpackages)
+	"""
+	pass
+
+def main():
+    tb = ThrowingBeanbag()
+    rospy.spin()
+
+if __name__  == "__main__":
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
