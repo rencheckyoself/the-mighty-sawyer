@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+"""
+Nodes in this folder act mainly as a ROS wrapper that imports stuff from the subpackage (eg. the-mighty-sawyer/src/the_mighty_sawyer) -- where all the cool stuff is really happening.
+"""
+import rospy
+from the_mighty_sawyer import function_x_from_dummy_module1, Class_Y_from_dummy_module1
+
+
+if __name__ == "__main__":
+    rospy.init_node("dummy_node1")
+    rospy.loginfo("This is dummy_node1. This node acts mainly as a ROS wrapper that imports stuff from dummy_module1 -- where all the cool stuff is really happening.")
+
+    dummy = Class_Y_from_dummy_module1()
+    dummy.d()

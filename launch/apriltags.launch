@@ -1,0 +1,14 @@
+<launch>
+    <node pkg="usb_cam" type="usb_cam_node" name="usb_cam">
+      <!-- Parameters used to find the camera -->
+      <param name="pixel_format" value="yuyv"/>
+    </node>
+
+    <node pkg="image_proc" type="image_proc" name="image_proc">
+
+  <!-- Include yolo_v3 launch file -->
+  <!--   <include file="$(find apriltag_ros)/apriltag_ros/launch/continuous_detection.launch" /> -->
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mighty_sawyer)/rviz/web.rviz" />
+
+</launch>

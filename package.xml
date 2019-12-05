@@ -55,6 +55,9 @@
   <depend>roscpp</depend>
   <build_depend>gazebo_ros</build_depend>
   <build_depend>gazebo</build_depend>
+  <build_depend>robot_state_publisher</build_depend>
+  <build_depend>rviz</build_depend>
+  <build_depend>joint_state_publisher</build_depend>
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>gazebo</exec_depend>
   <buildtool_depend>catkin</buildtool_depend>
@@ -63,6 +66,9 @@
   <depend>sensor_msgs</depend>
   <build_depend>cv_bridge</build_depend>
   <build_export_depend>cv_bridge</build_export_depend>
+  <build_export_depend>robot_state_publisher</build_export_depend>
+  <build_export_depend>joint_state_publisher</build_export_depend>
+  <build_export_depend>rviz</build_export_depend>
   <exec_depend>cv_bridge</exec_depend>
   <depend>message_generation</depend>
   <depend>actionlib</depend>
