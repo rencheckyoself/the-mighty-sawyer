@@ -40,6 +40,8 @@ class SawyerStates(object):
 		rospy.init_node("sawyer_states")
 		rospy.loginfo("Initializing Sawyer's states...")
 
+		#==	TODO: fix this bug
+		# this apparently is relative to where you rosrun the node, not relative to the project path
 		self._fn = 'config//joints_cfg_sawyer.yaml'
 		self._params = get_params_from_yaml(self._fn)
 		self._receive_home = self._params.get('receive_home')
