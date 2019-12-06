@@ -25,25 +25,25 @@ def main():
 
     testing = MoveArm()
 
-    testing.OpenGripper()
-
-    rospy.sleep(1)
+    testing.InitializeGripper()
 
     testing.go_to_recieving_pos()
 
-    rospy.sleep(3)
+    testing.OpenGripper()
+
+    testing.go_to_bag_pos()
 
     testing.CloseGripper()
 
-    rospy.sleep(3)
+    rospy.sleep(1)
 
-    testing.go_to_throwing_start()
+    # testing.do_under_hand_toss()
 
-    rospy.sleep(3)
+    testing.overhand_throw_start()
 
-    testing.throw()
+    rospy.sleep(2)
 
-    rospy.sleep(3)
+    testing.overhand_throw()
 
     testing.go_to_recieving_pos()
 
