@@ -7,9 +7,9 @@ TODO inspect oject data
 """
 import rospy
 import os
-from scripts.imagelib import switch_camera
+from the_mighty_sawyer.imagelib import switch_camera
 from the_mighty_sawyer.srv import GrabBag
-from std_msgs.msg import Bool, Float32MultiArray
+from std_msgs.msg import Bool, Float32MultiArray, Int8
 import intera_io
 import intera_interface
 
@@ -30,21 +30,23 @@ class GrabBagServer(object):
         self.disp = intera_interface.HeadDisplay()
 
         # sloppy way to get paths to display images
-        self.img_dir = os.dirname(os.abspath(__file__))
-        self.img_dir = os.path.join(dir, 'images', 'display')
-
+        self.img_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.img_dir = os.path.join(self.img_dir, 'images', 'display')
 
         self.io.set_signal_value('set_exposure', 20.0)
 
 
         switch_camera('arm')
 
-    def grab_bag_callback(self, data):
+    def grab_bag_callback(self, srv_data):
         """
 
         :param data:
         :return:
         """
+
+        # print('in callback')
+        self.disp.display_image(os.path.join(self.img_dir, 'blank_screen.png'))
 
         switch_camera('arm')
 
@@ -58,8 +60,11 @@ class GrabBagServer(object):
             self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
 
         switch_camera('head')
-
-        return True
+        #
+        # ret = GrabBag
+        # ret.val = 1
+        ret = Int8(1)
+        return ret
 
     def find_object_callback(self, data):
         """
@@ -68,13 +73,21 @@ class GrabBagServer(object):
         :return:
         """
 
-        print(len(data))
-        print(data)
-        print(data[0])
-        print(data[0][0])
+        # print(len(data))
+        # print('layout\t', data.layout)
+        # print('data\t', data.data)
 
-        obj = data[0][0] # TODO inspect to make sure this is correct
+        if data.data:
+            obj = data.data[0]
+        else:
+            obj = 0
+            # print('obj\t', data.data[0])
 
+
+        # print(data.data[0])
+
+        # obj = data[0][0] # TODO inspect to make sure this is correct
+        #
         if obj:
             if obj < 5:
                 self.red_count += 1
