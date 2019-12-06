@@ -138,7 +138,7 @@ catkin_python_setup()
 #)
 
 catkin_package(
-  LIBRARIES the_mighty_sawyer
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
     actionlib
     cv_bridge
@@ -205,6 +205,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
   nodes/dummy_node1
+  nodes/traj_with_sawyer
   scripts/beanbag_handoff
   scripts/pub_locate_board
   scripts/sub_locate_board

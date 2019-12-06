@@ -25,11 +25,13 @@ class MoveArm(object):
         Class containing methods to fully interact with the sawyer arm.
         """
         # Import Script to Enable/Disable
-        rs = intera_interface.RobotEnable(CHECK_VERSION)
+        self.rs = intera_interface.RobotEnable(CHECK_VERSION)
 
         self.gripper = intera_interface.Gripper('right_gripper')
 
         self.limb = intera_interface.Limb()
+
+        self.head = intera_interface.Head()
 
         self.joint_names = self.limb.joint_names()
 
@@ -58,6 +60,9 @@ class MoveArm(object):
     #         f.close()
     #
     #     return data
+
+    def EnableRobot(self):
+        rs.enable()
 
     def reset_default_settings(self):
         """
@@ -97,6 +102,10 @@ class MoveArm(object):
         """
         rospy.loginfo("Gripper Close")
         self.gripper.close()
+
+    def make_adjestments(self):
+
+        pass
 
     def go_to_home_pos(self):
         """
@@ -168,7 +177,8 @@ class MoveArm(object):
         rospy.loginfo("End Effector Pose ============================")
         rospy.loginfo(self.limb.endpoint_pose())
 
-    def calc_throw_start_pos(self):
+    def target_board(self):
+
         pass
 
     def do_under_hand_toss(self, release_angle=None, throwing_speed=None, target_angle=None):
