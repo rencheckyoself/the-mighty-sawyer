@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   joint_state_publisher
   message_generation
+  message_runtime
   robot_state_publisher
   roscpp
   rospy
@@ -68,11 +69,12 @@ catkin_python_setup()
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
+add_service_files(
+  FILES
+  GrabBag.srv
 #   Service1.srv
 #   Service2.srv
-# )
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -82,10 +84,10 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ## Generate .world, .urdf files from xacro files
 
@@ -144,6 +146,7 @@ catkin_package(
     cv_bridge
     geometry_msgs
     joint_state_publisher
+    message_runtime
     robot_state_publisher
     roscpp
     rospy
