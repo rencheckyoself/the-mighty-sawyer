@@ -25,9 +25,13 @@ def main():
 
     testing = MoveArm()
 
-    testing.OpenGripper()
+    testing.InitializeGripper()
 
     testing.go_to_recieving_pos()
+
+    testing.OpenGripper()
+
+    testing.go_to_bag_pos()
 
     testing.CloseGripper()
 
