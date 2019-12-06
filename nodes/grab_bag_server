@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+"""
+TODO import srv correctly
+TODO add srv to cmake
+TODO way to set team
+TODO inspect oject data
+"""
+import rospy
+import os
+from scripts.imagelib import switch_camera
+from the_mighty_sawyer.srv import GrabBag
+from std_msgs.msg import Bool, Float32MultiArray
+import intera_io
+import intera_interface
+
+class GrabBagServer(object):
+    """
+    """
+
+    def __init__(self):
+        self.bag_present = False
+        self.present_count = 0
+        self.blue_count = 0
+        self.red_count = 0
+        self.team = 'red'
+        self.present_thresh = 5
+        self.sub_find_object = rospy.Subscriber('objects', Float32MultiArray, self.find_object_callback)
+        self.grab_bag = rospy.Service('grab_bag', GrabBag, self.grab_bag_callback)
+        self.io = intera_io.IODeviceInterface('internal_camera', 'right_hand_camera')
+        self.disp = intera_interface.HeadDisplay()
+
+        # sloppy way to get paths to display images
+        self.img_dir = os.dirname(os.abspath(__file__))
+        self.img_dir = os.path.join(dir, 'images', 'display')
+
+
+        self.io.set_signal_value('set_exposure', 20.0)
+
+
+        switch_camera('arm')
+
+    def grab_bag_callback(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+
+        switch_camera('arm')
+
+        while self.blue_count < self.present_thresh and self.red_count < self.present_thresh:
+            pass
+
+        if self.blue_count >= self.present_thresh:
+            # turn display blue
+            self.disp.display_image(os.path.join(self.img_dir, 'blue_screen.png'))
+        else:
+            self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
+
+        switch_camera('head')
+
+        return True
+
+    def find_object_callback(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+
+        print(len(data))
+        print(data)
+        print(data[0])
+        print(data[0][0])
+
+        obj = data[0][0] # TODO inspect to make sure this is correct
+
+        if obj:
+            if obj < 5:
+                self.red_count += 1
+            else:
+                self.blue_count += 1
+        else:
+            self.red_count = 0
+            self.blue_count = 0
+
+
+def main():
+    """ The main() function. """
+    rospy.init_node('grab_bag_server')
+    myGrabBagServer = GrabBagServer()
+    rospy.spin()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
+
+
