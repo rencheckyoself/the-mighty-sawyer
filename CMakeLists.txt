@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   joint_state_publisher
   message_generation
+  message_runtime
   robot_state_publisher
   roscpp
   rospy
@@ -79,6 +80,7 @@ add_service_files(
   EvaluateThrowResult.srv
   ExecuteThrow.srv
   GrabBag.srv
+  GrabBag2.srv
   MoveToThrowPos.srv
   SawyerStates.srv
   WaitForBag.srv
