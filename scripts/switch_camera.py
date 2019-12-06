@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import imagelib
+from the_mighty_sawyer.imagelib import switch_camera
 import rospy
 
 if __name__ == '__main__':
@@ -9,4 +9,4 @@ if __name__ == '__main__':
         print("usage: camera_switcher active_camera (head, arm)")
     else:
         rospy.init_node('switch_camera')
-        imagelib.switch_camera(sys.argv[1])
+        switch_camera(sys.argv[1])

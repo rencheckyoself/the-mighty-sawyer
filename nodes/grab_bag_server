@@ -18,6 +18,7 @@ class GrabBagServer(object):
     """
 
     def __init__(self):
+        self.init = False
         self.bag_present = False
         self.present_count = 0
         self.blue_count = 0
