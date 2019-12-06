@@ -52,19 +52,17 @@ class MoveArm(object):
         Moves the arm to a preconfigured home position by setting joint
         angles directly.
         """
-        print "Going to Home..."
-
         joint_goal = {'right_j0':0.003546875,
                       'right_j1':-0.5124091796875,
                       'right_j2':0.0377041015625,
                       'right_j3':1.8277978515625,
                       'right_j4':-0.048537109375,
                       'right_j5':-2.8403095703125,
-                      'right_j6':-1.39600390625}
+                      'right_j6':-1.39}
 
         self.limb.set_joint_position_speed(speed=0.3)
 
-        rospy.loginfo(joint_goal)
+        rospy.loginfo("Going to Home...")
 
         self.limb.move_to_joint_positions(joint_goal)
 
@@ -85,12 +83,18 @@ class MoveArm(object):
     def calc_throw_start_pos(self):
         pass
 
-    def go_to_throwing_start(self):
+    def do_under_hand_toss(self):
+
+        self.underhand_throw_start()
+        rospy.sleep(1)
+        self.underhand_throw()
+
+    def underhand_throw_start(self):
         """
         Moves the arm to a calculated position to begin throwing the bag.
         """
 
-        rospy.loginfo("Start Throw")
+        rospy.loginfo("Start Underhand Throw")
 
         cur_joint_angles = self.limb.joint_angles()
 
@@ -109,9 +113,6 @@ class MoveArm(object):
         #               'right_j5':1}
 
 
-        name: [head_pan, right_j0, right_j1, right_j2, right_j3, right_j4, right_j5, right_j6, torso_t0]
-        position: [-1.0011552734375, -3.0510107421875, 0.0096748046875, -3.0412255859375, -0.0109296875, -0.074908203125, -0.1154091796875, -1.2699619140625, 0.0]
-
         self.limb.set_joint_position_speed(speed=0.3)
         self.limb.move_to_joint_positions(joint_goal)
 
@@ -124,7 +125,7 @@ class MoveArm(object):
         self.limb.set_joint_position_speed(speed=0.3)
         self.limb.move_to_joint_positions(joint_goal)
 
-    def throw(self):
+    def underhand_throw(self):
         """
         Throws the bag by rotating
         """
@@ -154,3 +155,59 @@ class MoveArm(object):
                     rospy.loginfo("Open Grippers")
                     self.OpenGripper()
                     release = 1
+
+    def overhand_throw_start(self):
+        """
+        Get to over hand throw position
+        """
+        rospy.loginfo("Start Overhand Throw")
+
+        cur_joint_angles = self.limb.joint_angles()
+
+        joint_goal = {'right_j0':-3,
+                      'right_j1':0.01,
+                      'right_j2':-3.04,
+                      'right_j3':-1.75,
+                      'right_j4':-0.074908203125,
+                      'right_j5':-2}
+
+        self.limb.set_joint_position_speed(speed=0.2)
+        self.limb.move_to_joint_positions(joint_goal, timeout=30)
+
+    def overhand_throw(self, option=1):
+
+
+        if option == 1:
+
+            joint_goal = {'right_j1':-3,
+                          'right_j3':1.5,
+                          'right_j5':1}
+        else:
+            joint_goal = {'right_j1':-.1,
+                          'right_j3':.1,
+                          'right_j5':.1}
+
+
+        self.limb.set_joint_position_speed(speed=1)
+
+        release = 0
+        cur_joint_angles = self.limb.joint_angles()
+
+        while cur_joint_angles[self.joint_names[1]] > -2.8:
+
+            if option == 1:
+                self.limb.set_joint_positions(joint_goal)
+            else:
+                self.limb.set_joint_velocities(joint_goal)
+
+            cur_joint_angles = self.limb.joint_angles()
+
+            if cur_joint_angles[self.joint_names[1]] <= -1.3 and release == 0:
+                    rospy.loginfo("Open Grippers")
+                    self.OpenGripper()
+                    release = 1
+
+                    if option != 1:
+                        joint_goal = {'right_j1':0,
+                                      'right_j3':0,
+                                      'right_j5':0}
