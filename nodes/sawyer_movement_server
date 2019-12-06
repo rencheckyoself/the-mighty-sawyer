@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-This file acts offers services to interact with the custom library to move
+This file offers services to interact with the custom library to move
 sawyer to different states for the grabbing and throwing sequence
 """
 
@@ -13,7 +13,7 @@ import rospy
 
 from the_mighty_sawyer import MoveArm
 
-from std_srvs.srv import Empty, SetBool
+from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse
 
 class ServClient(object):
 
@@ -21,28 +21,62 @@ class ServClient(object):
 
         self.sawyer = MoveArm()
 
-        rospy.Service('go_to_home_pos', Empty, self.home_pos_callback)
         rospy.Service('start_up', Empty, self.start_up_callback)
+        rospy.Service('go_to_home_pos', Empty, self.home_pos_callback)
         rospy.Service('overhand_throw', Empty, self.overhand_callback)
         rospy.Service('actuate_gripper', SetBool, self.actuate_gripper_callback)
 
-    def start_up_callback(self):
-        sawyer.initializaton()
+    def start_up_callback(self, _ignore):
+        """
+        Callback for the start up service.
+            1) Enables the robot.
+            2) Calibrates the gripper
 
-    def home_pos_callback(self):
-        sawyer.go_to_home_pos()
+        This should be called first before trying to interact with the robot
+        """
+        self.sawyer.initializaton()
 
-    def overhand_callback(self):
-        sawyer.do_over_hand_toss()
+        return EmptyResponse()
+
+    def home_pos_callback(self, _ignore):
+        """
+        Callback for the home position service
+
+        Send the robot to the preconfigured home position.
+        """
+        self.sawyer.go_to_home_pos()
+
+        return EmptyResponse()
+
+    def overhand_callback(self, _ignore):
+        """
+        Callback for the overhand throw service
+            1) positions the arm in a ready position
+            2) Executes the throwing motion
+        """
+        self.sawyer.do_over_hand_toss()
+
+        return EmptyResponse()
 
     def actuate_gripper_callback(self, data):
-        sawyer.actuate_gripper(data)
+        """
+        Callback for the gripper service
+
+        INPUTS:
+            data (SetBool): 1 to open grippers, 0 to close grippers
+        """
+        self.sawyer.actuate_gripper(data)
+
+        return SetBoolResponse(success=True,message="")
+
 
 def main():
 
     rospy.init_node('sawyer_movement_server')
 
     ServClient()
+
+    rospy.loginfo("Movement Server Ready!")
 
     rospy.spin()
 

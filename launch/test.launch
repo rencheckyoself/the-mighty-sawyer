@@ -1,10 +1,10 @@
-
-<!-- Lauch the gazebo sim or connect to Sawyer-->
-<!-- Launch Joint Action trajectory server -->
-<!-- Launch Sawyer MoveIt config -->
-
 <launch>
 
+  <!-- sim determines if the gazebo simulation of sawyer is launched.
+
+       The test_movement_sawyer.py file can test the services offered by
+       sawyer_movement_server -->
+       
   <arg name='sim' default='False'/>
 
   <group if="$(arg sim)">
@@ -14,6 +14,6 @@
   </group>
 
   <node name="JointTrajectoryActionServer" pkg="intera_interface" type="joint_trajectory_action_server.py" output="screen"/>
-  <node name="traj_with_sawyer" pkg="the_mighty_sawyer" type="traj_with_sawyer" output="screen"/>
+  <node name="sawyer_movement_server" pkg="the_mighty_sawyer" type="sawyer_movement_server" output="screen"/>
 
 </launch>

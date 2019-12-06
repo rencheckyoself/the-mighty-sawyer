@@ -43,31 +43,13 @@ class MoveArm(object):
         self.overhand_target_angle = -3
         self.overhand_release_angle = -1.3
 
-    #     _params = self.get_throw_params()
-    #     self.receive_home = _params.get('receive_home')
-    #     self.underhand_home = _params.get('throw_home')
-    #
-    #     print self.receive_home
-    #
-    # def get_throw_params(self):
-    #     """
-    #     Import default positions from the yaml file
-    #     """
-    #     with open('joints_cfg_sawyer.yaml') as f:
-    #         # use safe_load instead load
-    #         data = yaml.safe_load(f)
-    #
-    #         f.close()
-    #
-    #     return data
-
     def initializaton(self):
         self.EnableRobot()
         rospy.sleep(.5)
         self.InitializeGripper()
 
     def EnableRobot(self):
-        rs.enable()
+        self.rs.enable()
 
     def reset_default_settings(self):
         """
@@ -94,9 +76,16 @@ class MoveArm(object):
         self.gripper.calibrate()
 
     def actuate_gripper(self, state):
-        if state == 1:
+        """
+        Method to actuate the grippers given an input.
+
+        INPUT:
+            state (bool): value of 1 to open the grippers and 0 to close
+        """
+
+        if state.data == 1:
             self.OpenGripper()
-        elif state == 0:
+        elif state.data == 0:
             self.CloseGripper()
 
     def OpenGripper(self):
