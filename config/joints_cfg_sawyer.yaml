@@ -1,0 +1,15 @@
+receive_home: 
+  right_j0: 0.0
+  right_j1: -0.5
+  right_j2: 0.0
+  right_j3: 2.5
+  right_j4: 0.0
+  right_j5: -2.0
+
+throw_home: 
+  right_j0: -1.5
+  right_j1: 0.0
+  right_j2: 0.0
+  right_j3: 1.5
+  right_j4: -1.5
+  right_j5: 0.0

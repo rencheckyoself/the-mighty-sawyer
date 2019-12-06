@@ -4,13 +4,22 @@
 import rospy
 import actionlib
 
-from the_mighty_sawyer.msg import DoDishesAction, DoDishesGoal
+from the_mighty_sawyer.msg import (
+  ThrowAction,
+  ThrowActionFeedback, 
+  ThrowActionGoal,  
+  ThrowActionResult, 
+  ThrowFeedback, 
+  ThrowGoal, 
+  ThrowResult
+)
 
 if __name__ == '__main__':
-  rospy.init_node('do_dishes_client')
-  client = actionlib.SimpleActionClient('do_dishes', DoDishesAction)
+  rospy.init_node('throw_action_client')
+  _action_name = 'throw_base'
+  client = actionlib.SimpleActionClient('throw_base', ThrowAction)
   client.wait_for_server()
-  goal = DoDishesGoal()
+  goal = ThrowActionGoal()
   
   # Fill in the goal here
   client.send_goal(goal)

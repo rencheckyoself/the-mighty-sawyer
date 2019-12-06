@@ -4,20 +4,119 @@
 # roslib.load_manifest('the_mighty_sawyer')
 import rospy
 import actionlib
+import yaml
 
-from the_mighty_sawyer.msg import ThrowActionFeedback, ThrowActionGoal, ThrowAction, ThrowActionResult, ThrowFeedback, ThrowGoal, ThrowResult
+import intera_interface
+from intera_interface import CHECK_VERSION
 
-class ThrowActionServer:
+from the_mighty_sawyer.msg import (
+  ThrowAction,
+  ThrowActionFeedback, 
+  ThrowActionGoal,  
+  ThrowActionResult, 
+  ThrowFeedback, 
+  ThrowGoal, 
+  ThrowResult
+)
+from sensor_msgs.msg import (
+    JointState
+)
+from std_msgs.msg import (
+    Float64,
+    Header
+)
+from geometry_msgs.msg import (
+    Point,
+    Pose,
+    PoseStamped,
+    Quaternion
+)
+
+class ThrowActionServer(object):
+  _feedback = ThrowFeedback()
+  _result = ThrowResult()
+
   def __init__(self):
-    self.throw_as = actionlib.SimpleActionServer(
-      'throw_base', ThrowAction, execute_cb=self.execute_callback, auto_start=False)
-    self.throw_as.start()
+    self._fn = 'joints_cfg_sawyer.yaml'
+    self._params = _get_params_from_yaml(self._fn)
+    self._receive_home = self._params.get('receive_home')
+    self._throw_home = self._params.get('throw_home')
+    self._action_name = 'throw_base'
+
+    self.limb = intera_interface.Limb()
+    self._joint_names = self.limb.joint_names()
+
+    joint_state_topic = 'robot/joint_states'
+    _joint_state_sub = rospy.Subscriber(
+        joint_state_topic,
+        JointState,
+        self._on_joint_states,
+        queue_size=1,
+        tcp_nodelay=True)
+    self._throw_as = actionlib.SimpleActionServer(
+        self._action_name, 
+        ThrowAction, 
+        execute_cb=self.execute_callback, 
+        auto_start=False)
+    # self._throw_as = actionlib.SimpleActionServer('throw_base', ThrowAction, execute_cb=self.execute_callback, auto_start=False)
+
+    self._throw_as.start()
+
+  def _on_joint_states(self, msg):
+    for idx, name in enumerate(msg.name):
+      if name in self._joint_names:
+        self._joint_angle[name] = msg.position[idx]
+        self._joint_velocity[name] = msg.velocity[idx]
+        self._joint_effort[name] = msg.effort[idx]
 
   def execute_callback(self, goal):
+    r = rospy.Rate(1)
     success = True
-    # feedback = 
-    # result = 
-    self.throw_as.set_succeeded()
+    # _thresh = 
+    
+    _header = Header()
+    _header.stamp = rospy.Time.now()
+    _header.frame_id = 'sawyer_throw_action'
+    # self._feedback.pose_feedback.header = _header
+    # self._feedback.
+
+    # _pose = Pose()
+    # _pose.position.x = 0.0
+    # _pose.position.y = 0.0
+    # _pose.position.z = 0.0
+    # _pose.orientation.x = 0.0
+    # _pose.orientation.y = 0.0
+    # _pose.orientation.z = 0.0
+    # self._feedback.pose_feedback.pose = _pose
+
+    # Header header
+    # string[] name
+    # float64[] position
+    # float64[] velocity
+    # float64[] effort
+
+
+    
+    rospy.loginfo('%s: Executing throw... \n Goal joint_state: %s \n Feedback: %s' % (self._action_name, goal.pose_goal, self._feedback.pose_feedback.pose))
+
+    #== TODO: calculate l2 distance between goal position and current position
+    # diff = goal - start
+    
+    # while (diff > thresh):
+
+
+    # self._throw_as.set_succeeded()
+
+def _get_params_from_yaml(filename):
+  with open(filename) as f:
+      # use safe_load instead load
+      data = yaml.safe_load(f)
+  return data  
+
+
+def calculate_l2(a, b):
+  pass
+  
 
 if __name__ == '__main__':
   rospy.init_node('throw_action_server')

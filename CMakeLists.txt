@@ -74,11 +74,15 @@ catkin_python_setup()
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  EvaluateThrowResult.srv
+  ExecuteThrow.srv
+  GrabBag.srv
+  MoveToThrowPos.srv
+  SawyerStates.srv
+  WaitForBag.srv
+)
 
 ## Generate actions in the 'action' folder
 add_action_files(
@@ -215,13 +219,14 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
   nodes/dummy_node1
+  nodes/sawyer_states
   nodes/traj_with_moveit
   nodes/traj_with_sawyer
   scripts/beanbag_handoff
   scripts/pub_locate_board
   scripts/sub_locate_board
-  scripts/test_action_server_client
-  scripts/test_action_server_server
+  #scripts/test_action_server_client
+  #scripts/test_action_server_server
   scripts/throwing_beanbag
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

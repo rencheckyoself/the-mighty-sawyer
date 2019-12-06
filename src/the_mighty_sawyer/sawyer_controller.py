@@ -9,6 +9,7 @@ throw a bean bag.
 from __future__ import division
 import numpy as np
 import rospy
+import yaml
 
 import intera_interface
 from intera_interface import CHECK_VERSION
@@ -32,6 +33,15 @@ class MoveArm(object):
         self.limb = intera_interface.Limb()
 
         self.joint_names = self.limb.joint_names()
+
+        # Make sure to import yaml file in launch file
+    #     self._receive_home, self._throw_home = self.get_throw_params()
+
+    def get_throw_params(self):
+        with open('joints_cfg_sawyer.yaml') as f:
+            # use safe_load instead load
+            dataMap = yaml.safe_load(f)
+            
 
     def InitializeGripper(self):
         self.gripper.reboot()
