@@ -61,6 +61,11 @@ class MoveArm(object):
     #
     #     return data
 
+    def initializaton(self):
+        self.EnableRobot()
+        rospy.sleep(.5)
+        self.InitializeGripper()
+
     def EnableRobot(self):
         rs.enable()
 
@@ -85,9 +90,14 @@ class MoveArm(object):
         rospy.loginfo("Initializing Gripper...")
 
         self.gripper.reboot()
-        rospy.sleep(3)
+        rospy.sleep(1)
         self.gripper.calibrate()
-        rospy.sleep(3)
+
+    def actuate_gripper(self, state):
+        if state == 1:
+            self.OpenGripper()
+        elif state == 0:
+            self.CloseGripper()
 
     def OpenGripper(self):
         """
@@ -103,7 +113,7 @@ class MoveArm(object):
         rospy.loginfo("Gripper Close")
         self.gripper.close()
 
-    def make_adjestments(self):
+    def make_adjustments(self):
 
         pass
 
