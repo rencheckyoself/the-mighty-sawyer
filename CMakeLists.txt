@@ -220,13 +220,16 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
+  nodes/camera_converter
   nodes/dummy_node1
+  nodes/grab_bag_server
   nodes/sawyer_states
   nodes/traj_with_moveit
   nodes/traj_with_sawyer
   scripts/beanbag_handoff
   scripts/pub_locate_board
   scripts/sub_locate_board
+  scripts/switch_camera.py
   #scripts/test_action_server_client
   #scripts/test_action_server_server
   scripts/throwing_beanbag
