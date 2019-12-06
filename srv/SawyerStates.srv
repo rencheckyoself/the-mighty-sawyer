@@ -1,0 +1,3 @@
+# Stores the robot states and their (in)active statuses
+Header Header			# standard header 
+bool[] states_list		# list of sequential states and whether the state is active or not
