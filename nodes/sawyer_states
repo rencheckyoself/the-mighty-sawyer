@@ -1,0 +1,252 @@
+#!/usr/bin/env python
+
+""" This node is used to track Sawyer's states during cornhole games.
+	
+	SERVICES:
+		'wait_for_bag' [0]
+		'grab_bag' [1]
+		'move_to_throw_position [2]
+		'execute_throw' [3]
+		'evaluate_throw_result' [4]
+
+
+"""
+import rospy
+# import yaml
+
+from the_mighty_sawyer import (
+	find_true,
+	get_params_from_yaml)
+
+from the_mighty_sawyer.srv import (
+	WaitForBag, 
+	GrabBag2, 
+	MoveToThrowPos,
+	ExecuteThrow,
+	EvaluateThrowResult,
+	WaitForBagResponse, 
+	GrabBag2Response, 
+	MoveToThrowPosResponse,
+	ExecuteThrowResponse,
+	EvaluateThrowResultResponse)
+
+class SawyerStates(object):
+	"""
+	A class to track Sawyer's states
+	"""
+	def __init__(self):
+		# super(Sawyer, self).__init__()
+
+		rospy.init_node("sawyer_states")
+		rospy.loginfo("Initializing Sawyer's states...")
+
+		#==	TODO: fix this bug
+		# this apparently is relative to where you rosrun the node, not relative to the project path
+		self._fn = 'config//joints_cfg_sawyer.yaml'
+		self._params = get_params_from_yaml(self._fn)
+		self._receive_home = self._params.get('receive_home')
+		self._throw_home = self._params.get('throw_home')
+
+		self._srv_names = [
+							'wait_for_bag',
+							'grab_bag',
+							'move_to_throw_position',
+							'execute_throw',
+							'evaluate_throw_result']
+		# self._srvs = []
+		# self._Srv_Types = [WaitForBag, GrabBag2, MoveToThrowPos, ExecuteThrow, EvaluateThrowResult]
+
+		_srv_wait_for_bag = rospy.Service(
+											self._srv_names[0], 
+											WaitForBag, 
+											self._cb_wait_for_bag)
+		_srv_grab_bag = rospy.Service(
+											self._srv_names[1], 
+											GrabBag2, 
+											self._cb_grab_bag)
+		_srv_move_to_throw_pos = rospy.Service(
+											self._srv_names[2], 
+											MoveToThrowPos, 
+											self._cb_move_to_throw_pos)
+		_srv_execute_throw = rospy.Service(
+											self._srv_names[3], 
+											ExecuteThrow, 
+											self._cb_execute_throw)
+		_srv_evaluate_throw_result = rospy.Service(
+											self._srv_names[4], 
+											EvaluateThrowResult, 
+											self._cb_evaluate_throw_result)
+
+		self._sawyer_state = self._srv_names[0]
+
+		# for k in range(len(self._srv_names)):
+		# 	self._srvs[k] = rospy.Service(
+		# 						self._sawyer_state, 
+		# 						self._Srv_Types[k], 
+		# 						self._update_states)
+		rospy.loginfo("Initialization complete.")
+		rospy.loginfo("The current state is: %s.", self._sawyer_state)
+
+
+	def _cb_wait_for_bag(self, req):
+		"""
+		When receiving this service call, Sawyer waits for a bag to be presented by a person.
+		This means it will turn on its wrist camera, launch the bag detection node, and
+		report when it's completed this task.
+		"""
+		rospy.loginfo("The current state is: %s.", self._sawyer_state)
+
+		if (req.data == False):
+			rospy.loginfo("I should not wait for bag right now.")
+
+		elif (self._sawyer_state is not 'wait_for_bag'):
+			rospy.loginfo("Wait. I am not ready to receive a beanbag, yet.")
+		
+		else:
+			rospy.loginfo("I am waiting for my beanbag...")
+			#== turn on wrist camera / launch bag detection node
+
+
+			rospy.loginfo("Done. I am now ready to get into my grasping position.")
+			self._sawyer_state = self._srv_names[1]
+
+		return WaitForBagResponse()
+	
+
+	def _cb_grab_bag(self, req):
+		"""
+		When receiving this service call, Sawyer attemps to grab the bag that is presented 
+		by a person.  This means Sawyer calibrates the gripper and grabs the bag.
+		"""
+		rospy.loginfo("The current state is: %s.", self._sawyer_state)
+
+		if (req.data == False):
+			rospy.loginfo("I should not grab for the bag right now.")
+
+		elif (self._sawyer_state is not 'grab_bag'):
+			rospy.loginfo("Wait. I am not ready to grab the beanbag, yet.")
+		
+		else:
+			rospy.loginfo("I am grabbing the beanbag...")
+			#== move to grab position, calibrate grippers, grab bag
+
+
+			rospy.loginfo("Done. I am now ready to get into my throwing position.")
+			self._sawyer_state = self._srv_names[2]
+
+		return GrabBag2Response()
+
+
+	def _cb_move_to_throw_pos(self, req):
+		"""
+		When receiving this service call, Sawyer moves to a throwing position.
+		"""
+		rospy.loginfo("The current state is: %s.", self._sawyer_state)
+
+		if (req.data == False):
+			rospy.loginfo("I should not move to the bag right now.")
+
+		elif (self._sawyer_state is not 'move_to_throw_position'):
+			rospy.loginfo("Wait. I am not ready to move to the throwing position, yet.")
+		
+		else:
+			rospy.loginfo("I am moving to my throwing position...")
+			#== move to throwing position
+
+
+			rospy.loginfo("Done. I am now ready to throw the beanbag.")
+			self._sawyer_state = self._srv_names[3]
+
+		return MoveToThrowPosResponse()
+
+
+	def _cb_execute_throw(self, req):
+		"""
+		When receiving this service call, Sawyer attempts to throw the object.
+		"""
+		rospy.loginfo("The current state is: %s.", self._sawyer_state)
+
+		if (req.data == False):
+			rospy.loginfo("I should not throw the bag right now.")
+
+		elif (self._sawyer_state is not 'execute_throw'):
+			rospy.loginfo("Wait. I am not ready to throw, yet.")
+		
+		else:
+			rospy.loginfo("I am going to attempt to throw the beanbag...")
+			#== execute throw
+
+
+			rospy.loginfo("Done. I am now ready to evaluate my throw.")
+			self._sawyer_state = self._srv_names[4]	
+
+		return ExecuteThrowResponse()
+
+
+	def _cb_evaluate_throw_result(self, req):
+		"""
+		When receiving this service call, Sawyer attempts to evaluate its throw.
+		"""
+		rospy.loginfo("The current state is: %s.", self._sawyer_state)
+
+		if (req.data == False):
+			rospy.loginfo("I should not evaluate my throw right now.")
+
+		elif (self._sawyer_state is not 'evaluate_throw_result'):
+			rospy.loginfo("Wait. I am not ready to evaluate my throw, yet.")
+		
+		else:
+			rospy.loginfo("I am going to evaluate my throw...")
+			#== evaluate throw
+
+
+			rospy.loginfo("Done with my turn.")
+			self._sawyer_state = self._srv_names[0]
+
+			rospy.loginfo("The current state is: %s.", self._sawyer_state)
+
+		return EvaluateThrowResultResponse()
+
+
+	# def _update_states(self, req):
+	# 	"""
+	# 	When receiving a service call to transition to a new state, this checks whether it is a 
+	# 	legal transition; if so, it transitions the robot state.
+	# 	Input: service call request
+	# 	Output: update states_list
+	# 	"""
+	# 	_states_list = req.states_list
+	# 	_num_of_active_states = _states_list.count(True)
+
+	# 	if (_num_of_active_states == 0):
+	# 		rospy.loginfo("I have no goals at the moment.")
+	# 	elif (_num_of_active_states > 1):
+	# 		rospy.loginfo("I have too many goals.")
+	# 	else:
+	# 		rospy.loginfo("I have just the right amount of goals right now.")
+
+	# 	index_true = find_true(_states_list)
+
+# def get_params_from_yaml(filename):
+#   with open(filename) as f:
+# 	  # use safe_load instead load
+# 	  data = yaml.safe_load(f)
+#   return data
+
+# def find_true(alist):
+# 	"""
+# 	Find the indices in a list where they are Trues
+# 	"""
+# 	return [i for i, x in enumerate(alist) if x]
+# 	# return [alist.index(i) for i in alist if i == True]	#-- just grabs the first True
+
+
+def main():
+    ss = SawyerStates()
+    rospy.spin()
+
+if __name__  == "__main__":
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
