@@ -16,8 +16,6 @@ from intera_interface import CHECK_VERSION
 import geometry_msgs.msg
 from std_msgs.msg import String
 
-import yaml
-
 class MoveArm(object):
 
     def __init__(self):

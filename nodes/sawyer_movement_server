@@ -14,6 +14,7 @@ import rospy
 from the_mighty_sawyer import MoveArm
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse
+from geometry_msgs.msg import Pose
 
 class ServClient(object):
 
@@ -25,6 +26,7 @@ class ServClient(object):
         rospy.Service('go_to_home_pos', Empty, self.home_pos_callback)
         rospy.Service('overhand_throw', Empty, self.overhand_callback)
         rospy.Service('actuate_gripper', SetBool, self.actuate_gripper_callback)
+        rospy.Service('make_adjustments', Empty, self.make_adjustments_callback)
 
     def start_up_callback(self, _ignore):
         """
@@ -55,6 +57,25 @@ class ServClient(object):
             2) Executes the throwing motion
         """
         self.sawyer.do_over_hand_toss()
+
+        return EmptyResponse()
+
+    def make_adjustments_callback(self, _ignore):
+        """
+        Callback for the make adjustments service
+        """
+
+        board_pose = Pose()
+
+        board_pose.position.x = 16
+        board_pose.position.y = 7*12
+
+        rospy.loginfo(board_pose)
+
+        bag_pose = Pose()
+
+        self.sawyer.overhand_throw_speed = 1
+        self.sawyer.overhand_target_angle = -2.75
 
         return EmptyResponse()
 
