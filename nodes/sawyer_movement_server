@@ -64,18 +64,65 @@ class ServClient(object):
         """
         Callback for the make adjustments service
         """
+        #
+        # # Set first targeting angle
+        # default_board_pose = Pose()
+        #
+        # default_board_pose.position.x = 16
+        # default_board_pose.position.y = 84
+        #
+        # board_pose = Pose()
+        #
+        # board_pose.position.x = 32
+        # board_pose.position.y = 60
+        #
+        # default_heading = np.arctan2(default_board_pose.position.y, default_board_pose.position.x)
+        # target_heading = np.arctan2(board_pose.position.y, board_pose.position.x)
+        #
+        # dtheta_target = default_heading - target_heading
+        #
+        # default_range = ((default_board_pose.position.x)**2 + (default_board_pose.position.y)**2)**.5
+        # target_range = ((board_pose.position.x)**2 + (board_pose.position.y)**2)**.5
+        #
+        # drange_target = (default_range - target_range) / (2*default_range)
+        #
+        # # y_diff_board = board_pose.position.y - default_board_pose.position.y
+        # # x_diff_board = board_pose.position.x - default_board_pose.position.x
+        # #
+        # # print y_diff_board, x_diff_board
+        # #
+        # # theta_target = np.arctan2(y_diff_board, x_diff_board)
+        #
+        # bag_pose = Pose()
+        #
+        # bag_pose.position.x = 28
+        # bag_pose.position.y = 63
+        #
+        # bag_heading = np.arctan2(bag_pose.position.y, bag_pose.position.x)
+        #
+        # dtheta_adjust =  bag_heading - target_heading
+        #
+        # # x_diff_throw = bag_pose.position.x - board_pose.position.x
+        # # y_diff_throw = bag_pose.position.y - board_pose.position.y
+        # #
+        # # distance_from_target = ((x_diff_throw)**2 + (y_diff_throw)**2)**.5
+        # # angle_from_target = np.arctan2(y_diff_throw, x_diff_throw)
+        # #
+        # #
+        # # # Check if throw was
+        # # if distance_from_target > 5 and angle_from_target < np.pi/2 and angle_from_target > -np.pi/2:
+        # #     pass
 
-        board_pose = Pose()
 
-        board_pose.position.x = 16
-        board_pose.position.y = 7*12
-
-        rospy.loginfo(board_pose)
-
-        bag_pose = Pose()
-
-        self.sawyer.overhand_throw_speed = 1
-        self.sawyer.overhand_target_angle = -2.75
+        self.sawyer.overhand_throw_speed -= .125 # drange_target
+        # self.sawyer.overhand_target_angle += dtheta_target + dtheta_adjust
+        self.sawyer.overhand_release_angle = -1.4
+        # rospy.loginfo(board_pose)
+        # rospy.loginfo(dtheta_target)
+        # rospy.loginfo(dtheta_adjust)
+        rospy.loginfo(self.sawyer.overhand_target_angle)
+        rospy.loginfo(self.sawyer.overhand_throw_speed)
+        rospy.loginfo(self.sawyer.overhand_release_angle)
 
         return EmptyResponse()
 
@@ -89,7 +136,6 @@ class ServClient(object):
         self.sawyer.actuate_gripper(data)
 
         return SetBoolResponse(success=True,message="")
-
 
 def main():
 

@@ -33,6 +33,8 @@ class MoveArm(object):
 
         self.joint_names = self.limb.joint_names()
 
+        self.select_throw = 1
+
         self.underhand_throw_speed = 0.8
         self.underhand_target_angle = -1.5
         self.underhand_release_angle = .75
@@ -40,6 +42,8 @@ class MoveArm(object):
         self.overhand_throw_speed = 1
         self.overhand_target_angle = -3
         self.overhand_release_angle = -1.3
+
+        self.overhand_throw_offset = 0
 
     def initializaton(self):
         self.EnableRobot()
@@ -344,13 +348,15 @@ class MoveArm(object):
         # Get current Joint Angles
         cur_joint_angles = self.limb.joint_angles()
 
+        calc_offset_j3 = (-1.75 + self.overhand_throw_offset)
+        calc_offset_j5 = (-2 + self.overhand_throw_offset)
         # Set Desired Joint Anlges
         joint_goal = {'right_j0':self.overhand_target_angle,
                       'right_j1':0.01,
                       'right_j2':-3.04,
-                      'right_j3':-1.75,
+                      'right_j3':calc_offset_j3,
                       'right_j4':-0.074908203125,
-                      'right_j5':-2}
+                      'right_j5':calc_offset_j5}
 
         # Actuate Arm
         self.limb.set_joint_position_speed(speed=0.2)
