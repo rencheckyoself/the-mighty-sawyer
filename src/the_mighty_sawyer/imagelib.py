@@ -46,7 +46,7 @@ def camera_command_client(camera, status, timeout=0.0):
         print("Service call failed: %s"%e)
 
 
-def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=5, thickness=4):
+def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thickness=4):
     disp = intera_interface.HeadDisplay()
 
     img = np.zeros(shape=[600, 1024, 3], dtype=np.uint8)

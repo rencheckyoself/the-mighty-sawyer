@@ -8,7 +8,7 @@ TODO inspect oject data
 import rospy
 import os
 from the_mighty_sawyer.imagelib import switch_camera, put_text
-from the_mighty_sawyer.srv import GrabBag,
+from the_mighty_sawyer.srv import GrabBag
 from std_msgs.msg import Bool, Float32MultiArray, Int8
 import intera_io
 import intera_interface
@@ -50,8 +50,8 @@ class GrabBagServer(object):
         """
         self.gripper(0)
         switch_camera('arm')
-        self.disp.display_image(os.path.join(self.img_dir, 'blank_screen.png'))
-
+        # self.disp.display_image(os.path.join(self.img_dir, 'blank_screen.png'))
+        put_text('Bag please.')
         bag_present = False
         if not self.init:
             while self.blue_count < self.present_thresh and self.red_count < self.present_thresh:
@@ -62,11 +62,14 @@ class GrabBagServer(object):
                 self.disp.display_image(os.path.join(self.img_dir, 'blue_screen.png'))
                 self.team = 'blue'
                 put_text('Go Blue!', (255, 0, 0))
-
+                rospy.sleep(2)
+                put_text('Ready!', (255, 0, 0))
             else:
                 self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
                 self.team = 'red'
                 put_text('Red Team!', (0, 0, 255))
+                rospy.sleep(2)
+                put_text('Ready!', (0, 0, 255))
             self.init = True
             bag_present = True
 
@@ -76,18 +79,16 @@ class GrabBagServer(object):
             if self.blue_count >= self.present_thresh:
                 # turn display blue
                 self.disp.display_image(os.path.join(self.img_dir, 'blue_screen.png'))
-                rospy.sleep(1)
                 if self.team == 'blue':
-                    put_text('Ready for my bag!', (255, 0, 0))
+                    put_text('Ready!', (255, 0, 0))
                     bag_present = True
                 else:
                     put_text('Wrong team!', (255, 0, 0), (0,0,255))
 
             else:
                 self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
-                rospy.sleep(1)
                 if self.team == 'red':
-                    put_text('Ready for my bag!', (0, 0, 255))
+                    put_text('Ready!', (0, 0, 255))
                     bag_present = True
                 else:
                     put_text('Wrong team!', (0, 0, 255), (255, 0, 0))
@@ -104,12 +105,15 @@ class GrabBagServer(object):
         # else:
         #     self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
         self.gripper(1)
+        rospy.sleep(5)
+        self.gripper(0)
         switch_camera('head')
         #
         # ret = GrabBag
         # ret.val = 1
 
-
+        put_text('Stand clear.')
+        rospy.sleep(5)
 
 
 
