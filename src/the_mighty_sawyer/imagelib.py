@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+"""
+Provides functions for visual aspects of project (cameras, display images, etc).
+"""
 import rospy
 import sys
 from intera_core_msgs.srv._IOComponentCommandSrv import IOComponentCommandSrv
@@ -9,8 +13,12 @@ import os
 import intera_interface
 
 
-
 def switch_camera(cam):
+    """
+    Change active camera feed on Sawyer
+    args- cam (arm, head)
+    """
+
     if cam == 'head':
         camera_command_client(camera='right_hand_camera', status=False)
         camera_command_client(camera='head_camera', status=True)
@@ -24,6 +32,7 @@ def switch_camera(cam):
 def camera_command_client(camera, status, timeout=0.0):
     """
     based on https://www.aransena.com/blog/2018/1/11/rethink-robotics-sawyer-camera-access
+    client to process Sawyer camera commands
     :param camera:
     :param status:
     :param timeout:
@@ -47,6 +56,16 @@ def camera_command_client(camera, status, timeout=0.0):
 
 
 def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thickness=4):
+    """
+    Write text to Sawyer's display screen
+    :param text:  string- test to displya
+    :param bg_color:  (b,g,r)- background color
+    :param text_color:  (b,g,r)- text color
+    :param scale:  float- font size
+    :param thickness:  float- font thickness
+    :return:
+    """
+
     disp = intera_interface.HeadDisplay()
 
     img = np.zeros(shape=[600, 1024, 3], dtype=np.uint8)
@@ -56,44 +75,28 @@ def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thic
     img[:, :, 1] = g
     img[:, :, 2] = r
 
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    scale = 5
-    thick = 3
+    font = cv2.FONT_HERSHEY_DUPLEX
 
-    textsize = cv2.getTextSize(text, font, scale, thick)[0]
+    textsize = cv2.getTextSize(text, font, scale, thickness)[0]
 
     textX = (img.shape[1] - textsize[0]) / 2
     textY = (img.shape[0] + textsize[1]) / 2
 
-    img = cv2.putText(img, text, (textX, textY), font, scale, text_color, thick)
+    img = cv2.putText(img, text, (textX, textY), font, scale, text_color, thickness)
 
     cv2.imwrite('temp.png', img)
     disp.display_image('temp.png')
     os.remove('temp.png')
 
-
-# # create blank image - y, x
-# img = np.zeros((600, 1000, 3), np.uint8)
 #
-# # setup text
-# font = cv2.FONT_HERSHEY_SIMPLEX
-# text = "Hello Joseph!!"
+# def display_image(img):
+#     """
+#     Displays an image from imagaes/display directory on Sawyer's screen.
+#     TODO need to test if __file__ path is library or node calling library
+#     """
+#     disp = intera_interface.HeadDisplay()
 #
-# # get boundary of this text
-# textsize = cv2.getTextSize(text, font, 1, 2)[0]
-#
-# # get coords based on boundary
-# textX = (img.shape[1] - textsize[0]) / 2
-# textY = (img.shape[0] + textsize[1]) / 2
-#
-# # add text centered on image
-# cv2.putText(img, text, (textX, textY ), font, 1, (255, 255, 255), 2)
-#
-# # display image
-# cv2.imshow('image', img)
-#
-# # wait so you can see the image
-# sleep(25)
-#
-# # cleanup
-# cv2.destroyAllWindows()
+#     # sloppy way to get paths to display images- don't use but may be useful in other nodes
+#     img_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#     img_dir = os.path.join(img_dir, 'images', 'display')
+#     disp.display_image(os.path.join(img_dir, 'blank_screen.png'))

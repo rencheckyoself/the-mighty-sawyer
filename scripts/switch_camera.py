@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+"""
+Script to change the active camera feed on Sawyer.
+args:  active_camera ('arm', 'head')
+"""
+
 import sys
 from the_mighty_sawyer.imagelib import switch_camera
 import rospy
