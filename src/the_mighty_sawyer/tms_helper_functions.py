@@ -29,3 +29,9 @@ def find_true(alist):
 	"""
 	return [i for i, x in enumerate(alist) if x]
 	# return [alist.index(i) for i in alist if i == True]	#-- just grabs the first True
+
+def calculate_l2_norm(xy0, xy1):
+	pass
+
+def calculate_bearing():
+	pass

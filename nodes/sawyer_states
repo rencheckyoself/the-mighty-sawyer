@@ -56,23 +56,23 @@ class SawyerStates(object):
 		# self._srvs = []
 		# self._Srv_Types = [WaitForBag, GrabBag2, MoveToThrowPos, ExecuteThrow, EvaluateThrowResult]
 
-		_srv_wait_for_bag = rospy.ServiceProxy(
+		_srv_wait_for_bag = rospy.Service(
 											self._srv_names[0], 
 											WaitForBag, 
 											self._cb_wait_for_bag)
-		_srv_grab_bag = rospy.ServiceProxy(
+		_srv_grab_bag = rospy.Service(
 											self._srv_names[1], 
 											GrabBag2, 
 											self._cb_grab_bag)
-		_srv_move_to_throw_pos = rospy.ServiceProxy(
+		_srv_move_to_throw_pos = rospy.Service(
 											self._srv_names[2], 
 											MoveToThrowPos, 
 											self._cb_move_to_throw_pos)
-		_srv_execute_throw = rospy.ServiceProxy(
+		_srv_execute_throw = rospy.Service(
 											self._srv_names[3], 
 											ExecuteThrow, 
 											self._cb_execute_throw)
-		_srv_evaluate_throw_result = rospy.ServiceProxy(
+		_srv_evaluate_throw_result = rospy.Service(
 											self._srv_names[4], 
 											EvaluateThrowResult, 
 											self._cb_evaluate_throw_result)

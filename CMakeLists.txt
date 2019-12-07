@@ -223,15 +223,20 @@ install(PROGRAMS
   nodes/camera_converter
   nodes/dummy_node1
   nodes/grab_bag_server
+  nodes/sawyer_main_client.py
+  nodes/sawyer_movement_server
   nodes/sawyer_states
   nodes/traj_with_moveit
   nodes/traj_with_sawyer
+  src/the_mighty_sawyer/imagelib.py
   scripts/beanbag_handoff
+  scripts/imagelib.py
   scripts/pub_locate_board
   scripts/sub_locate_board
   scripts/switch_camera.py
   #scripts/test_action_server_client
   #scripts/test_action_server_server
+  scripts/test_movement_server.py
   scripts/throwing_beanbag
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
