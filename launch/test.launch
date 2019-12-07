@@ -1,10 +1,9 @@
 <launch>
 
   <!-- sim determines if the gazebo simulation of sawyer is launched.
-
        The test_movement_sawyer.py file can test the services offered by
        sawyer_movement_server -->
-       
+
   <arg name='sim' default='False'/>
 
   <group if="$(arg sim)">
