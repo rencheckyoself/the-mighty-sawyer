@@ -228,9 +228,8 @@ install(PROGRAMS
   nodes/sawyer_states
   nodes/traj_with_moveit
   nodes/traj_with_sawyer
-  src/the_mighty_sawyer/imagelib.py
+  src/${PROJECT_NAME}/imagelib.py
   scripts/beanbag_handoff
-  scripts/imagelib.py
   scripts/pub_locate_board
   scripts/sub_locate_board
   scripts/switch_camera.py
