@@ -2,9 +2,11 @@
 """
 Converts camera feed encoding to something find_object_2d can work with
 
-SUBSCRIBES arm camera image_raw
+SUBSCRIBES:
+/io/internal_camera/right_hand_camera/image_rect - rectified mono8 image feed from arm cam
 
-PUBLISHES converted camera topic
+PUBLISHES:
+/image_converted - image converted to bgr8 format
 
 """
 
@@ -13,9 +15,10 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
+
 class CameraConverter(object):
     """
-
+    
     """
 
     def __init__(self):
@@ -23,10 +26,6 @@ class CameraConverter(object):
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/io/internal_camera/right_hand_camera/image_rect", Image, self.image_callback)
         self.image_pub = rospy.Publisher("image_converted", Image, queue_size=10)
-
-
-
-
 
     def image_callback(self, data):
         """
@@ -45,7 +44,6 @@ class CameraConverter(object):
             self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
         except CvBridgeError as e:
             print(e)
-
 
 
 def main():
