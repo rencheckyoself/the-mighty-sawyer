@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 """
-TODO import srv correctly
-TODO add srv to cmake
-TODO way to set team
-TODO inspect oject data
+Node that provides service to acquire bean bag from human player.
+
+PUBLISHES:
+None
+
+SUBSCRIBES:
+/objects-  receives information on presence of beanbags
+
+SERVICES:
+grab_bag- Empty/Empty, initiate process to grab beanbag from player
 """
 import rospy
 import os
@@ -14,8 +20,10 @@ import intera_io
 import intera_interface
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse
 
+
 class GrabBagServer(object):
     """
+    Object to provide grab bag service
     """
 
     def __init__(self):
@@ -47,16 +55,19 @@ class GrabBagServer(object):
 
     def grab_bag_callback(self, srv_data):
         """
-
-        :param data:
-        :return:
+        Service request callback. Grabs bag from player. The first time this is called, Sawyer will
+        accept bag of either color. On subsequent calls will only accept first color.
+        :param data: na
+        :return: na
         """
 
+        # open gripper, switch to correct feed, display instructions
         self.gripper_srv(0)
         switch_camera('arm')
         put_text('Bag please.', bg_color=self.bg_color)
         bag_present = False
 
+        # Get bag and select team
         if not self.init:
             while self.blue_count < self.present_thresh and self.red_count < self.present_thresh:
                 pass
@@ -76,6 +87,7 @@ class GrabBagServer(object):
             self.init = True
             bag_present = True
 
+        # Get bag of correct color
         while not bag_present:
             while self.blue_count < self.present_thresh and self.red_count < self.present_thresh:
                 pass
@@ -92,16 +104,16 @@ class GrabBagServer(object):
                 else:
                     put_text('Wrong team! Try again.', bg_color=(0, 0, 255), text_color=(255, 0, 0), scale=2.5)
 
+        # open gripper, wait, close gripper
         self.gripper_srv(1)
         rospy.sleep(5)
         self.gripper_srv(0)
 
+        # check if bag in gripper
         has_bag = False
-
         rospy.sleep(1)
         if self.gripper.get_force() > 2:
             has_bag = True
-
         while not has_bag:
             self.gripper_srv(1)
             put_text('Insert bag...', bg_color=self.bg_color)
@@ -120,16 +132,18 @@ class GrabBagServer(object):
 
     def find_object_callback(self, data):
         """
-
+        Processes beanbag detection.
         :param data:
         :return:
         """
 
+        # Check if object present
         if data.data:
             obj = data.data[0]
         else:
             obj = 0
 
+        # classify object, 1-4 are red 5-8 are blue
         if obj:
             if obj < 5:
                 self.red_count += 1
