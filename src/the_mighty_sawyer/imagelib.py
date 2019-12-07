@@ -56,16 +56,14 @@ def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thic
     img[:, :, 1] = g
     img[:, :, 2] = r
 
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    scale = 5
-    thick = 3
+    font = cv2.FONT_HERSHEY_DUPLEX
 
-    textsize = cv2.getTextSize(text, font, scale, thick)[0]
+    textsize = cv2.getTextSize(text, font, scale, thickness)[0]
 
     textX = (img.shape[1] - textsize[0]) / 2
     textY = (img.shape[0] + textsize[1]) / 2
 
-    img = cv2.putText(img, text, (textX, textY), font, scale, text_color, thick)
+    img = cv2.putText(img, text, (textX, textY), font, scale, text_color, thickness)
 
     cv2.imwrite('temp.png', img)
     disp.display_image('temp.png')

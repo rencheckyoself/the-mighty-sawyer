@@ -19,28 +19,31 @@ class GrabBagServer(object):
     """
 
     def __init__(self):
+        # Variables
         self.init = False
         self.bag_present = False
-        self.present_count = 0
         self.blue_count = 0
         self.red_count = 0
-        self.team = 'red'
+        self.team =  None
         self.present_thresh = 5
+        self.bg_color = (255,255,255)
+
+        # ROS publishers/subscribers/services
+        rospy.Service('grab_bag', Empty, self.grab_bag_callback)
         self.sub_find_object = rospy.Subscriber('objects', Float32MultiArray, self.find_object_callback)
-        self.grab_bag = rospy.Service('grab_bag', GrabBag, self.grab_bag_callback)
+        self.gripper_srv = rospy.ServiceProxy('actuate_gripper', SetBool)
+
+        # intera objects
         self.io = intera_io.IODeviceInterface('internal_camera', 'right_hand_camera')
         self.disp = intera_interface.HeadDisplay()
+        self.gripper = intera_interface.Gripper()
 
-        self.gripper = rospy.ServiceProxy('actuate_gripper', SetBool)
-
-        # sloppy way to get paths to display images
-        self.img_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.img_dir = os.path.join(self.img_dir, 'images', 'display')
+        # # sloppy way to get paths to display images- don't use but may be useful in other nodes
+        # self.img_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # self.img_dir = os.path.join(self.img_dir, 'images', 'display')
+        # self.disp.display_image(os.path.join(self.img_dir, 'blank_screen.png'))
 
         self.io.set_signal_value('set_exposure', 20.0)
-
-
-        switch_camera('arm')
 
     def grab_bag_callback(self, srv_data):
         """
@@ -48,28 +51,28 @@ class GrabBagServer(object):
         :param data:
         :return:
         """
-        self.gripper(0)
+
+        self.gripper_srv(0)
         switch_camera('arm')
-        # self.disp.display_image(os.path.join(self.img_dir, 'blank_screen.png'))
-        put_text('Bag please.')
+        put_text('Bag please.', bg_color=self.bg_color)
         bag_present = False
+
         if not self.init:
             while self.blue_count < self.present_thresh and self.red_count < self.present_thresh:
                 pass
 
             if self.blue_count >= self.present_thresh:
-                # turn display blue
-                self.disp.display_image(os.path.join(self.img_dir, 'blue_screen.png'))
                 self.team = 'blue'
                 put_text('Go Blue!', (255, 0, 0))
                 rospy.sleep(2)
-                put_text('Ready!', (255, 0, 0))
+                put_text('Ready for bag.', (255, 0, 0))
+                self.bg_color = (255, 0, 0)
             else:
-                self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
                 self.team = 'red'
                 put_text('Red Team!', (0, 0, 255))
                 rospy.sleep(2)
-                put_text('Ready!', (0, 0, 255))
+                put_text('Ready for bag.', (0, 0, 255))
+                self.bg_color = (0, 0, 255)
             self.init = True
             bag_present = True
 
@@ -77,48 +80,43 @@ class GrabBagServer(object):
             while self.blue_count < self.present_thresh and self.red_count < self.present_thresh:
                 pass
             if self.blue_count >= self.present_thresh:
-                # turn display blue
-                self.disp.display_image(os.path.join(self.img_dir, 'blue_screen.png'))
                 if self.team == 'blue':
-                    put_text('Ready!', (255, 0, 0))
+                    put_text('Ready for bag.', bg_color=self.bg_color)
                     bag_present = True
                 else:
-                    put_text('Wrong team!', (255, 0, 0), (0,0,255))
-
+                    put_text('Wrong team! Try again.', bg_color=(255,0,0), text_color=(0,0,255), scale=2.5)
             else:
-                self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
                 if self.team == 'red':
-                    put_text('Ready!', (0, 0, 255))
+                    put_text('Ready for bag.', bg_color=self.bg_color)
                     bag_present = True
                 else:
-                    put_text('Wrong team!', (0, 0, 255), (255, 0, 0))
-        # print('in callback')
+                    put_text('Wrong team! Try again.', bg_color=(0, 0, 255), text_color=(255, 0, 0), scale=2.5)
 
-
-
-        # while self.blue_count < self.present_thresh and self.red_count < self.present_thresh:
-        #     pass
-        #
-        # if self.blue_count >= self.present_thresh:
-        #     # turn display blue
-        #     self.disp.display_image(os.path.join(self.img_dir, 'blue_screen.png'))
-        # else:
-        #     self.disp.display_image(os.path.join(self.img_dir, 'red_screen.png'))
-        self.gripper(1)
+        self.gripper_srv(1)
         rospy.sleep(5)
-        self.gripper(0)
+        self.gripper_srv(0)
+
+        has_bag = False
+
+        rospy.sleep(1)
+        if self.gripper.get_force() > 2:
+            has_bag = True
+
+        while not has_bag:
+            self.gripper_srv(1)
+            put_text('Insert bag...', bg_color=self.bg_color)
+            rospy.sleep(5)
+            self.gripper_srv(0)
+            rospy.sleep(1)
+            if self.gripper.get_force() > 2:
+                has_bag = True
+
         switch_camera('head')
-        #
-        # ret = GrabBag
-        # ret.val = 1
 
-        put_text('Stand clear.')
+        put_text('Stand clear.', bg_color=self.bg_color)
         rospy.sleep(5)
 
-
-
-        ret = Int8(1)
-        return ret
+        return EmptyResponse()
 
     def find_object_callback(self, data):
         """
@@ -127,21 +125,11 @@ class GrabBagServer(object):
         :return:
         """
 
-        # print(len(data))
-        # print('layout\t', data.layout)
-        # print('data\t', data.data)
-
         if data.data:
             obj = data.data[0]
         else:
             obj = 0
-            # print('obj\t', data.data[0])
 
-
-        # print(data.data[0])
-
-        # obj = data[0][0] # TODO inspect to make sure this is correct
-        #
         if obj:
             if obj < 5:
                 self.red_count += 1
