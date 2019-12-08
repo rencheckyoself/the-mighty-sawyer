@@ -53,20 +53,20 @@
   <build_depend>robot_state_publisher</build_depend>
   <build_depend>rviz</build_depend>
   <build_depend>joint_state_publisher</build_depend>
-  <exec_depend>gazebo_ros</exec_depend>
-  <exec_depend>gazebo</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <buildtool_depend>catkin</buildtool_depend>
-  <depend>geometry_msgs</depend>
-  <exec_depend>map_server</exec_depend>
-  <depend>sensor_msgs</depend>
-  <build_depend>cv_bridge</build_depend>
   <build_export_depend>cv_bridge</build_export_depend>
   <build_export_depend>message_runtime</build_export_depend>
   <build_export_depend>robot_state_publisher</build_export_depend>
   <build_export_depend>joint_state_publisher</build_export_depend>
   <build_export_depend>rviz</build_export_depend>
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>gazebo</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>map_server</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz</exec_depend>
   <depend>actionlib</depend>
   <depend>actionlib_msgs</depend>
   <depend>geometry_msgs</depend>
@@ -77,14 +77,6 @@
   <depend>std_msgs</depend>
   <depend>urdf</depend>
   <depend>xacro</depend>
-  <exec_depend>cv_bridge</exec_depend>
-  <exec_depend>gazebo</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
-  <exec_depend>joint_state_publisher</exec_depend>
-  <exec_depend>map_server</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>rviz</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

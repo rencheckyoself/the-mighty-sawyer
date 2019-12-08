@@ -79,8 +79,8 @@ add_service_files(
   FILES
   EvaluateThrowResult.srv
   ExecuteThrow.srv
-  GrabBag.srv
   GetPose.srv
+  GrabBag.srv
   GrabBag2.srv
   MoveToThrowPos.srv
   SawyerStates.srv
@@ -229,7 +229,6 @@ install(PROGRAMS
   nodes/sawyer_states
   nodes/traj_with_moveit
   nodes/traj_with_sawyer
-  src/${PROJECT_NAME}/imagelib.py
   scripts/beanbag_handoff
   scripts/pub_locate_board
   scripts/sub_locate_board
@@ -238,6 +237,7 @@ install(PROGRAMS
   #scripts/test_action_server_server
   scripts/test_movement_server.py
   scripts/throwing_beanbag
+  src/${PROJECT_NAME}/imagelib.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
