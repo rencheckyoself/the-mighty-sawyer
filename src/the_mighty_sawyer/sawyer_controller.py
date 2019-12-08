@@ -29,6 +29,9 @@ class MoveArm(object):
 
         self.limb = intera_interface.Limb()
 
+        self.head = intera_interface.Head()
+        self.head_angle
+
         self.joint_names = self.limb.joint_names()
 
         self.target_pose = Pose()
@@ -104,10 +107,6 @@ class MoveArm(object):
         rospy.loginfo("Gripper Close")
         self.gripper.close()
 
-    def make_adjustments(self):
-
-        pass
-
     def go_to_home_pos(self):
         """
         Moves the arm to a preconfigured home position by setting joint
@@ -134,6 +133,8 @@ class MoveArm(object):
 
         # Send command
         self.limb.move_to_joint_positions(joint_goal)
+
+        self.head.set_pan(self.head_angle)
 
     def go_to_bag_pos(self, delay_time):
         """
@@ -177,10 +178,6 @@ class MoveArm(object):
         """
         rospy.loginfo("End Effector Pose ============================")
         rospy.loginfo(self.limb.endpoint_pose())
-
-    def target_board(self):
-
-        pass
 
     def do_under_hand_toss(self, release_angle=None, throwing_speed=None, target_angle=None):
         """

@@ -83,13 +83,13 @@ class ServClient(object):
 
         if abs(current_range - target_range) > 0.2286:
             rospy.loginfo("Board Change Detected -- Updating Target...")
-            self.target_board_callback()
+            self.target_board_callback(Empty())
 
         self.update_throw()
 
         return EmptyResponse()
 
-    def target_board_callback(self, data):
+    def target_board_callback(self, _ignore):
         """
         Function to target the board. This will update the defualt parameters so
         sawyer will target the location of board relative to its default throwing
@@ -107,11 +107,12 @@ class ServClient(object):
         default_board_pose = Pose()
 
         # Location of throw without modifying any parameters
-        default_board_pose.position.x = 0.4064
-        default_board_pose.position.y = 2.1336
+        default_board_pose.position.x = -0.44
+        default_board_pose.position.y = 0.29
+        default_board_pose.position.z = 3.14
 
         # Store the current board pose here
-        self.sawyer.target_pose = data
+        self.sawyer.target_pose = self.board
 
         # Used for Testing
         # self.sawyer.target_pose.pose.position.x = 0.8128
@@ -140,7 +141,7 @@ class ServClient(object):
         # Print out updated Parameters
         self.print_params()
 
-    def update_throw(self, data):
+    def update_throw(self):
         """
         Function to make adjustments based on sawyers most recent throw.
 
@@ -156,6 +157,8 @@ class ServClient(object):
             data (geometry_msgs/Pose) the current pose of the most recent bag
                                         thrown.
         """
+
+        data = self.bag
 
         # Used for Testing
         # data.pose.position.x = 1.143
