@@ -72,6 +72,7 @@ catkin_python_setup()
 add_service_files(
   FILES
   GrabBag.srv
+  GetPose.srv
 #   Service1.srv
 #   Service2.srv
 )
@@ -86,6 +87,7 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
+  geometry_msgs
   std_msgs  # Or other packages containing msgs
 )
 

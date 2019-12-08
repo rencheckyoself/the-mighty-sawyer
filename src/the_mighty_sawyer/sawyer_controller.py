@@ -13,7 +13,7 @@ import rospy
 import intera_interface
 from intera_interface import CHECK_VERSION
 
-import geometry_msgs.msg
+from geometry_msgs.msg import Pose
 from std_msgs.msg import String
 
 class MoveArm(object):
@@ -22,16 +22,16 @@ class MoveArm(object):
         """
         Class containing methods to fully interact with the sawyer arm.
         """
-        # Import Script to Enable/Disable
+
         self.rs = intera_interface.RobotEnable(CHECK_VERSION)
 
         self.gripper = intera_interface.Gripper('right_gripper')
 
         self.limb = intera_interface.Limb()
 
-        self.head = intera_interface.Head()
-
         self.joint_names = self.limb.joint_names()
+
+        self.target_pose = Pose()
 
         self.select_throw = 1
 
@@ -348,8 +348,9 @@ class MoveArm(object):
         # Get current Joint Angles
         cur_joint_angles = self.limb.joint_angles()
 
-        calc_offset_j3 = (-1.75 + self.overhand_throw_offset)
-        calc_offset_j5 = (-2 + self.overhand_throw_offset)
+        calc_offset_j3 = -1.75 + self.overhand_throw_offset
+        calc_offset_j5 = -2 + self.overhand_throw_offset
+
         # Set Desired Joint Anlges
         joint_goal = {'right_j0':self.overhand_target_angle,
                       'right_j1':0.01,
@@ -371,7 +372,7 @@ class MoveArm(object):
         # Set desired ending position
         joint_goal = {'right_j1':-3,
                       'right_j3':1.5,
-                      'right_j5':1}
+                      'right_j5':1.25}
 
         # Set throwing speed
         self.limb.set_joint_position_speed(speed=self.overhand_throw_speed)
