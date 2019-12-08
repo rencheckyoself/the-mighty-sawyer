@@ -73,7 +73,7 @@ class ServClient(object):
 
         return EmptyResponse()
 
-    def make_adjustments_callback(self, data):
+    def make_adjustments_callback(self, _ignore):
 
         self.board = self.get_board_pose()
         self.bag = self.get_bag_pose()
