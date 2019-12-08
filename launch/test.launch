@@ -4,7 +4,7 @@
        The test_movement_sawyer.py file can test the services offered by
        sawyer_movement_server -->
 
-  <arg name='sim' default='False'/>
+  <arg name='sim' default='True'/>
 
   <group if="$(arg sim)">
     <include file="$(find sawyer_gazebo)/launch/sawyer_world.launch">

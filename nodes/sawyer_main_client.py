@@ -7,6 +7,16 @@ import rospy
 import sys
 import time
 
+from geometry_msgs.msg import (
+	Pose,
+	PoseWithCovariance)
+
+from std_srvs.srv import (
+	Empty, 
+	EmptyResponse, 
+	SetBool, 
+	SetBoolResponse)
+
 from the_mighty_sawyer import (
 	find_true,
 	get_params_from_yaml)
@@ -14,11 +24,8 @@ from the_mighty_sawyer import (
 from the_mighty_sawyer import (
 	MoveArm)
 
-from std_srvs.srv import (
-	Empty, 
-	EmptyResponse, 
-	SetBool, 
-	SetBoolResponse)
+from the_mighty_sawyer.srv import (
+	GetPose)
 
 # from the_mighty_sawyer.srv import (
 # 	WaitForBag, 
@@ -32,129 +39,231 @@ from std_srvs.srv import (
 # 	ExecuteThrowResponse,
 # 	EvaluateThrowResultResponse)
 
-def start_up_client(srv_name):
+
+####################################################
+# 	SERVICES :: sawyer_movement_server
+####################################################
+
+def start_up_client():
+	"""
+	This is the client for the Service 'start_up' provided by sawyer_movement_server
+	"""
+
+	srv_name = 'start_up'
 	rospy.wait_for_service(srv_name)
 	try:
-		_srv_start_up = rospy.ServiceProxy(
-											srv_name, 
-											Empty)
+		_srv_start_up = rospy.ServiceProxy(srv_name, Empty)
+		print("I am performing initialization tasks...")
 		_srv_start_up()
-		print("I am waiting for my beanbag...")
 		rospy.sleep(1)
 		return _srv_start_up
 
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
-def actuate_gripper_client(srv_name):
-	_open_gripper = True
-	rospy.wait_for_service(srv_name)
-	try:
-		_srv_actuate_gripper = rospy.ServiceProxy(
-										srv_name, 
-										SetBool)
-		print("I am grabbing the beanbag...")
-		_srv_actuate_gripper(_open_gripper)
-		rospy.sleep(1)
-		_srv_actuate_gripper(not _open_gripper)
-		return _srv_actuate_gripper
-	except rospy.ServiceException, e:
-		print "Service call failed: %s"%e
-
 def go_to_home_pos_client(srv_name):
+	"""
+	This is the client for the Service 'go_to_home_pos' provided by sawyer_movement_server
+	"""
+	if srv_name is not 'go_to_home_pos':
+		pass
+
 	rospy.wait_for_service(srv_name)
 	try:
-		_srv_go_to_home_pos = rospy.ServiceProxy(
-										srv_name, 
-										Empty)
+		_srv_go_to_home_pos = rospy.ServiceProxy(srv_name, Empty)
 		print("I am moving to my throwing position...")
 		_srv_go_to_home_pos()
+		rospy.sleep(1)
 		return _srv_go_to_home_pos
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
 def overhand_throw_client(srv_name):
+	"""
+	This is the client for the Service 'overhand_throw' provided by sawyer_movement_server
+	"""
+	if srv_name is not 'overhand_throw':
+		pass
+
 	rospy.wait_for_service(srv_name)
 	try:
-		_srv_overhand_throw = rospy.ServiceProxy(
-										srv_name, 
-										Empty)
+		_srv_overhand_throw = rospy.ServiceProxy(srv_name, Empty)
 		print("I am going to attempt to throw the beanbag...")
 		_srv_overhand_throw()
+		rospy.sleep(1)
 		return _srv_overhand_throw
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
+# def target_board_client(srv_name):
+# 	"""
+# 	This is the client for the Service 'target_board' provided by sawyer_movement_server
+# 	"""
+# 	if srv_name is not 'target_board':
+# 		pass
+
+# 	rospy.wait_for_service(srv_name)
+# 	try:
+# 		_srv_target_board = rospy.ServiceProxy(srv_name, Empty)
+# 		print("I am going to attempt to target the cornhole board...")
+# 		_srv_target_board()
+# 		rospy.sleep(1)
+# 		return _srv_target_board
+# 	except rospy.ServiceException, e:
+# 		print "Service call failed: %s"%e
+
+def make_adjustments_client(srv_name):
+	"""
+	This is the client for the Service 'make_adjustments' provided by sawyer_movement_server
+	"""
+	if srv_name is not 'make_adjustments':
+		pass
+
+	# _sub_pose = rospy.Subcriber('/pose_april_tags', PoseWithCovariance, pose_callback)
+
+	# _pose_board = Pose()
+	# _pose_bag = Pose()
+
+	rospy.wait_for_service(srv_name)
+	try:
+		_srv_make_adjustments = rospy.ServiceProxy(srv_name, Empty)
+		print("I am going to attempt to throw the beanbag...")
+		_srv_make_adjustments()
+		rospy.sleep(1)
+		return _srv_make_adjustments
+	except rospy.ServiceException, e:
+		print "Service call failed: %s"%e
+
+
+	# def pose_callback():
+	# 	pass
+
+
+####################################################
+# 	SERVICES :: grab_bag_server
+####################################################
+
+def grab_bag_client(srv_name):
+	"""
+	This is the client for the Service 'grab_bag' provided by grab_bag_server
+	"""
+	if srv_name is not 'grab_bag':
+		pass
+
+	rospy.wait_for_service(srv_name)
+	try:
+		_srv_grab_bag = rospy.ServiceProxy(srv_name, Empty)
+		print("I am attempting to grab the beanbag...")
+		_srv_grab_bag()
+		rospy.sleep(1)
+		return _srv_grab_bag
+	except rospy.ServiceException, e:
+		print "Service call failed: %s"%e
+
+
+####################################################
+# 	SERVICES :: score_keeping_server???
+####################################################
+
 # def evaluate_throw_result_client(srv_name):
+# 	"""
+# 	This is the client for the Service 'evaluate_throw_result' provided by 
+# 	"""
 # 	rospy.wait_for_service(srv_name)
 # 	try:
 # 		_srv_evaluate_throw_result = rospy.ServiceProxy(
 # 										srv_name, 
 # 										EvaluateThrowResult)
 # 		print("I am going to evaluate my throw...")
+# 		_srv_evaluate_throw_result()
+# 		rospy.sleep(1)
 # 		return _srv_evaluate_throw_result
 # 	except rospy.ServiceException, e:
 # 		print "Service call failed: %s"%e
 
 
 def sawyer_main_client():
+	"""
+	This is the sawyer's main Service client that governs all of sawyer's Services
+	"""
 
 	#== initialization
-
-	#==	TODO: fix this bug --> use param server
-	# this apparently is relative to where you rosrun the node, 
-	# not relative to the project path
-	# _fn = 'config//joints_cfg_sawyer.yaml'
-	# _params = get_params_from_yaml(_fn)
-	# _receive_home = _params.get('receive_home')
-	# _throw_home = _params.get('throw_home')
-
 	rospy.init_node("sawyer_main_client")
+
+	#-- preserve this order until we use something like dictionaries
 	_srv_names = [
-						'start_up',
-						'actuate_gripper',
+						'grab_bag',
+						'target_board',
 						'go_to_home_pos',
 						'overhand_throw',
-						'evaluate_throw_result']
+						# 'evaluate_throw_result',
+						'make_adjustments']
 
-	sawyer_state = _srv_names[0]
+	num_of_states = len(_srv_names)
+	state_idx = 1					
+	sawyer_state = _srv_names[state_idx % num_of_states]
 
+	start_up_client()
 	print("Initialization complete.")
 	
 	rate = rospy.Rate(1)
 
 	while not rospy.is_shutdown():
 		print("The current state is: " + str(sawyer_state))
+		print("state_idx: " + str(state_idx))
 		if (sawyer_state not in _srv_names):
-			sawyer_state = _srv_names[0]
-			rospy.sleep(1)
-
-		elif (sawyer_state is 'start_up'):
-			start_up_client(sawyer_state)
-			sawyer_state = _srv_names[1]
+			start_up_client()
 			
-		elif (sawyer_state is 'actuate_gripper'):
-			actuate_gripper_client(sawyer_state)
-			sawyer_state = _srv_names[2]
+		elif (sawyer_state is 'grab_bag'):
+			grab_bag_client(sawyer_state)
+			# update_state()
+			state_idx = (state_idx + 1) % num_of_states
+			sawyer_state = _srv_names[state_idx]
+			print("I am now ready to transition to state: " + str(sawyer_state))
+
+		elif (sawyer_state is 'target_board'):
+			target_board_client(sawyer_state)
+			# update_state()
+			state_idx = (state_idx + 1) % num_of_states
+			sawyer_state = _srv_names[state_idx]
 			print("I am now ready to transition to state: " + str(sawyer_state))
 		
 		elif (sawyer_state is 'go_to_home_pos'):
 			go_to_home_pos_client(sawyer_state)
-			sawyer_state = _srv_names[3]
+			# update_state()
+			state_idx = (state_idx + 1) % num_of_states
+			sawyer_state = _srv_names[state_idx]
 			print("I am now ready to transition to state: " + str(sawyer_state))
 
 		elif (sawyer_state is 'overhand_throw'):
 			overhand_throw_client(sawyer_state)
-			sawyer_state = _srv_names[0]
+			# update_state()
+			state_idx = (state_idx + 1) % num_of_states
+			sawyer_state = _srv_names[state_idx]
 			print("I am now ready to transition to state: " + str(sawyer_state))
 
 		# elif (sawyer_state is 'evaluate_throw_result'):
 		# 	evaluate_throw_result_client(sawyer_state)
-		# 	sawyer_state = _srv_names[0]
-		# 	print("I am now in state: " + str(sawyer_state))
-		# 	rospy.sleep(1)
+		# 	# state_idx, sawyer_state = update_state(state_idx, sawyer_state)
+		# 	state_idx = (state_idx + 1) % num_of_states
+		# 	sawyer_state = _srv_names[state_idx]
+		# 	print("I am now ready to transition to state: " + str(sawyer_state))
+
+		#-- make_adjustments
+		elif (sawyer_state is 'make_adjustments'):
+			make_adjustments_client(sawyer_state)
+			# update_state()
+			state_idx = (state_idx + 1) % num_of_states
+			sawyer_state = _srv_names[state_idx]
+			print("I am now ready to transition to state: " + str(sawyer_state))
 
 		rate.sleep()
+
+	# def update_state():
+	# 	state_idx = (state_idx + 1) % num_of_states
+	# 	sawyer_state = _srv_names[state_idx]
+	# 	print("I am now ready to transition to state: " + str(sawyer_state))
+				
 
 if __name__ == '__main__':
 	try:
