@@ -3,6 +3,11 @@
 """
 This file offers services to interact with the custom library to move
 sawyer to different states for the grabbing and throwing sequence
+
+SERVICES:
+    /start_up: enable the robot and calibrate the grippers
+    /go_to_home_pos: send the robot to a preset home position
+    /overhand_throw: executes an overhand
 """
 
 # TODO: get default parameters from yaml file.
@@ -27,10 +32,14 @@ class ServClient(object):
         rospy.Service('go_to_home_pos', Empty, self.home_pos_callback)
         rospy.Service('overhand_throw', Empty, self.overhand_callback)
         rospy.Service('actuate_gripper', SetBool, self.actuate_gripper_callback)
-        rospy.Service('make_adjustments', GetPose, self.make_adjustments_callback)
-        rospy.Service('target_board', GetPose, self.target_board_callback)
+        rospy.Service('target_board', Empty, self.target_board_callback)
+        rospy.Service('make_adjustments', Empty, self.make_adjustments_callback)
 
-        self.initial_targeting_angle = None
+        rospy.wait_for_service('shans_service_board')
+        self.get_board_pose = rospy.ServiceProxy('shans_service_board', Empty)
+
+        rospy.wait_for_service('shans_service_bag')
+        self.get_bag_pose = rospy.ServiceProxy('shans_service_bag', Empty)
 
     def start_up_callback(self, _ignore):
         """
@@ -64,18 +73,50 @@ class ServClient(object):
 
         return EmptyResponse()
 
-    def target_board_callback(self, data):
+    def make_adjustments_callback(self, _ignore):
+
+        self.board = self.get_board_pose()
+        self.bag = self.get_bag_pose()
+
+        target_range = ((self.sawyer.target_pose.pose.position.x)**2 + (self.sawyer.target_pose.pose.position.y)**2)**.5
+        current_range = ((self.board.position.x)**2 + (self.board.position.y)**2)**.5
+
+        if abs(current_range - target_range) > 0.2286:
+            rospy.loginfo("Board Change Detected -- Updating Target...")
+            self.target_board_callback(Empty())
+
+        self.update_throw()
+
+        return EmptyResponse()
+
+    def target_board_callback(self, _ignore):
+        """
+        Function to target the board. This will update the defualt parameters so
+        sawyer will target the location of board relative to its default throwing
+        location
+
+        INPUT:
+            data (geometry_msgs/Pose) the current pose of the board.
+
+        """
+
+        # Reset parameters to their default values
+        self.sawyer.reset_default_settings()
+
         # Set first targeting angle
         default_board_pose = Pose()
 
         # Location of throw without modifying any parameters
-        default_board_pose.position.x = 0.4064
-        default_board_pose.position.y = 2.1336
+        default_board_pose.position.x = -0.44
+        default_board_pose.position.y = 0.29
+        default_board_pose.position.z = 3.14
 
         # Store the current board pose here
-        self.sawyer.target_pose = data
-        self.sawyer.target_pose.pose.position.x = 0.8128
-        self.sawyer.target_pose.pose.position.y = 1.524
+        self.sawyer.target_pose = self.board
+
+        # Used for Testing
+        # self.sawyer.target_pose.pose.position.x = 0.8128
+        # self.sawyer.target_pose.pose.position.y = 1.524
 
         # Calculate the headings of each point relative to the base
         default_heading = np.arctan2(default_board_pose.position.y, default_board_pose.position.x)
@@ -93,49 +134,54 @@ class ServClient(object):
 
         # Set the angle to throw
         self.sawyer.overhand_target_angle += dtheta_target
-        self.initial_targeting_angle = self.sawyer.overhand_target_angle
 
-        # Set the distance to throw
+        # Set the speed to throw
         self.sawyer.overhand_throw_speed = 1 * (1 - drange_target)
 
         # Print out updated Parameters
         self.print_params()
 
-        return GetPoseResponse()
-
-    def print_params(self):
-        rospy.loginfo("====================  ADJUSTMENTS ====================")
-        rospy.loginfo("Targeting Angle: %s", self.sawyer.overhand_target_angle)
-        rospy.loginfo("Throwing Speed: %s", self.sawyer.overhand_throw_speed)
-        rospy.loginfo("Release Angle: %s", self.sawyer.overhand_release_angle)
-        rospy.loginfo("======================================================")
-
-    def make_adjustments_callback(self, data):
+    def update_throw(self):
         """
-        Callback for the make adjustments service
-        """
-        bag_pose = data
+        Function to make adjustments based on sawyers most recent throw.
 
-        bag_pose.pose.position.x = 1.143
-        bag_pose.pose.position.y = 1.8288
+        Check for overshoot and undershoot by evalauating if the distance between
+        the bag and the target is greater than 1ft. and the bag is in quadrent
+        2 or 4.
+
+        Check for poor aim by evalauating if the distance between the bag and
+        the target is greater than 6in. and the bag is in quadrent 1 or 3, then
+        change the targeting angle.
+
+        INPUT:
+            data (geometry_msgs/Pose) the current pose of the most recent bag
+                                        thrown.
+        """
+
+        data = self.bag
+
+        # Used for Testing
+        # data.pose.position.x = 1.143
+        # data.pose.position.y = 1.8288
 
         # Get Range and heading from target to the bag
-        x_diff_throw = bag_pose.pose.position.x - self.sawyer.target_pose.pose.position.x
-        y_diff_throw = bag_pose.pose.position.y - self.sawyer.target_pose.pose.position.y
+        x_diff_throw = data.pose.position.x - self.sawyer.target_pose.pose.position.x
+        y_diff_throw = data.pose.position.y - self.sawyer.target_pose.pose.position.y
 
         distance_from_target = ((x_diff_throw)**2 + (y_diff_throw)**2)**.5
         angle_from_target = np.arctan2(y_diff_throw, x_diff_throw)
 
-        rospy.loginfo(distance_from_target)
-        rospy.loginfo(angle_from_target)
+        rospy.loginfo("Bag distance from Board Location: %s", distance_from_target)
+        rospy.loginfo("Bag heading from Board Location: %s", angle_from_target)
 
         # Check for overshoot and undershoot
-        # If the distance is greater than 2ft. and the bag is in quadrent 2 or 4
+        # If the distance is greater than 1ft. and the bag is in quadrent 2 or 4
         # Then change the velocity respectively.
         if distance_from_target > 0.3:
             if angle_from_target > 0 and angle_from_target < np.pi/2:
                 self.sawyer.overhand_throw_speed -= .1
 
+                # Check for a minimum speed setting
                 if self.sawyer.overhand_throw_speed < .6:
                     self.sawyer.overhand_throw_speed = .6
                     rospy.loginfo("Overshoot Detected -- At Min Speed")
@@ -146,6 +192,7 @@ class ServClient(object):
             elif angle_from_target < -np.pi/2 and angle_from_target > -np.pi:
                 self.sawyer.overhand_throw_speed += .1
 
+                # Check for a maximum speed setting
                 if self.sawyer.overhand_throw_speed > 1:
                     self.sawyer.overhand_throw_speed = 1
                     rospy.loginfo("Undershoot Detected -- At Max Speed")
@@ -153,7 +200,7 @@ class ServClient(object):
                     rospy.loginfo("Undershoot Detected -- Increasing throwing speed")
 
         # Check for poor aim
-        # If the distance from the target is greater than 1ft. and the bag is in
+        # If the distance from the target is greater than 6in. and the bag is in
         # quadrent 1 or 3,
         # Then change the targeting angle
         if distance_from_target > 0.15:
@@ -161,15 +208,13 @@ class ServClient(object):
                 rospy.loginfo("Heading too far off -- Updating Throwing Angle")
 
                 target_heading = np.arctan2(self.sawyer.target_pose.pose.position.y, self.sawyer.target_pose.pose.position.x)
-                bag_heading = np.arctan2(bag_pose.pose.position.y, bag_pose.pose.position.x)
+                bag_heading = np.arctan2(data.pose.position.y, data.pose.position.x)
 
                 dtheta_adjust =  bag_heading - target_heading
 
                 self.sawyer.overhand_target_angle += dtheta_adjust
 
         self.print_params()
-
-        return GetPoseResponse()
 
     def actuate_gripper_callback(self, data):
         """
@@ -181,6 +226,14 @@ class ServClient(object):
         self.sawyer.actuate_gripper(data)
 
         return SetBoolResponse(success=True,message="")
+
+    def print_params(self):
+        rospy.loginfo("====================  ADJUSTMENTS ====================")
+        rospy.loginfo("Targeting Angle: %s", self.sawyer.overhand_target_angle)
+        rospy.loginfo("Throwing Speed: %s", self.sawyer.overhand_throw_speed)
+        rospy.loginfo("Release Angle: %s", self.sawyer.overhand_release_angle)
+        rospy.loginfo("======================================================")
+
 
 def main():
 

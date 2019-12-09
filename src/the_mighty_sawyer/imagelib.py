@@ -10,7 +10,7 @@ from intera_core_msgs.msg._IOComponentCommand import IOComponentCommand
 import cv2
 import numpy as np
 import os
-import intera_interface
+import intera_interface, intera_io
 
 
 def switch_camera(cam):
@@ -87,6 +87,56 @@ def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thic
     cv2.imwrite('temp.png', img)
     disp.display_image('temp.png')
     os.remove('temp.png')
+
+def display_png(img_name, bg_color=(255,255,255)):
+    """
+    Displays a png image from imagaes/display directory on Sawyer's screen.
+    """
+    disp = intera_interface.HeadDisplay()
+
+    img = np.zeros(shape=[600, 1024, 3], dtype=np.uint8)
+
+    b, g, r = bg_color
+    img[:,:,0] = b
+    img[:, :, 1] = g
+    img[:, :, 2] = r
+
+    # sloppy way to get paths to display images- don't use but may be useful in other nodes
+    img_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    img_dir = os.path.join(img_dir, 'images', 'display')
+    img_path = os.path.join(img_dir, img_name)
+    pic = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+
+    alpha = pic[:, :, 3]
+    h, w = alpha.shape
+
+    for x in range(h):
+        for y in range(w):
+            if not alpha[x, y]:
+                pic[x, y] = (b, g, r, 1)
+
+    offh = int((img.shape[0] - pic.shape[0]) / 2)
+    offw = int((img.shape[1] - pic.shape[1]) / 2)
+
+    img[offh:(offh + pic.shape[0]), offw:(offw + pic.shape[1]), :] = pic[:, :, :3]
+
+    cv2.imwrite('temp.png', img)
+    disp.display_image('temp.png')
+    os.remove('temp.png')
+
+
+def set_exposure(cam, val):
+    """
+    sets exposure of selected camera
+    """
+    if cam == 'arm':
+        cam = 'right_hand_camera'
+    elif cam == 'head':
+        cam = 'head_camera'
+
+    io = intera_io.IODeviceInterface('internal_camera', cam)
+    io.set_signal_value('set_exposure', val)
+
 
 #
 # def display_image(img):
