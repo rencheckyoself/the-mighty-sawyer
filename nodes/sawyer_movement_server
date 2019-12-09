@@ -17,7 +17,7 @@ import rospy
 from the_mighty_sawyer import MoveArm
 from the_mighty_sawyer.imagelib import display_png
 
-from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse, Trigger, TriggerResponse
+from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse, Trigger, TriggerRequest, TriggerResponse
 from the_mighty_sawyer.srv import GetPose, GetPoseResponse
 from geometry_msgs.msg import Pose
 
@@ -42,7 +42,7 @@ class ServClient(object):
         self.get_bag_pose = rospy.ServiceProxy('shans_service_bag', Empty)
 
         rospy.wait_for_service('get_team')
-        self.get_bag_pose = rospy.ServiceProxy('get_team', Trigger)
+        self.get_team = rospy.ServiceProxy('get_team', Trigger)
 
         self.team = None
         self.color = (0,0,0)
@@ -77,7 +77,7 @@ class ServClient(object):
         """
 
         if not self.team or self.team == 'None':
-            resp = self.team_call.call(TriggerRequest())
+            resp = self.get_team.call(TriggerRequest())
             self.team = resp.message
 
             if self.team == 'blue':
