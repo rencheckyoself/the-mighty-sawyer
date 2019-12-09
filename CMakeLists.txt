@@ -85,6 +85,7 @@ add_service_files(
   MoveToThrowPos.srv
   SawyerStates.srv
   WaitForBag.srv
+  TagPose.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -99,7 +100,8 @@ generate_messages(
   actionlib_msgs
   geometry_msgs
   sensor_msgs
-  std_msgs  # Or other packages containing msgs
+  std_msgs  
+  apriltag_ros # Or other packages containing msgs
 )
 
 ## Generate .world, .urdf files from xacro files
@@ -168,6 +170,7 @@ catkin_package(
     sensor_msgs
     std_msgs
     xacro
+    apriltag_ros
 )
 
 ###########
