@@ -10,7 +10,7 @@ from intera_core_msgs.msg._IOComponentCommand import IOComponentCommand
 import cv2
 import numpy as np
 import os
-import intera_interface
+import intera_interface, intera_io
 
 
 def switch_camera(cam):
@@ -123,6 +123,20 @@ def display_png(img_name, bg_color=(255,255,255)):
     cv2.imwrite('temp.png', img)
     disp.display_image('temp.png')
     os.remove('temp.png')
+
+
+def set_exposure(cam, val):
+    """
+    sets exposure of selected camera
+    """
+    if cam == 'arm':
+        cam = 'right_hand_camera'
+    elif cam == 'head':
+        cam = 'head_camera'
+
+    io = intera_io.IODeviceInterface('internal_camera', cam)
+    io.set_signal_value('set_exposure', val)
+
 
 #
 # def display_image(img):

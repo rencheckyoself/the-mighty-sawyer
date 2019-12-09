@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 """
-Script to change the active camera feed on Sawyer.
-args:  active_camera ('arm', 'head')
+Script to display a png from images/display folder on the screen
 """
 
 import sys
