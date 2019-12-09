@@ -2,6 +2,7 @@
 
 """
 Provides functions for visual aspects of project (cameras, display images, etc).
+
 """
 import rospy
 import sys
@@ -58,6 +59,9 @@ def camera_command_client(camera, status, timeout=0.0):
 def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thickness=4):
     """
     Write text to Sawyer's display screen
+
+    get emojis here: https://emojiisland.com/pages/free-download-emoji-icons-png
+
     :param text:  string- test to displya
     :param bg_color:  (b,g,r)- background color
     :param text_color:  (b,g,r)- text color

@@ -50,8 +50,8 @@ def tms_initialization():
 	"""
 	print("Initializing...")
 	start_up_client()
-	target_board_client()
 	go_to_home_pos_client()
+	make_adjustments_client()
 	print("Initialization complete.")
 
 def start_up_client():
