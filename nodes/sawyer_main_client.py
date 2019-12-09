@@ -52,6 +52,7 @@ def tms_initialization():
 	start_up_client()
 	go_to_home_pos_client()
 	make_adjustments_client('make_adjustments')
+	clear_board_client()
 	print("Initialization complete.")
 
 def start_up_client():
@@ -170,6 +171,23 @@ def grab_bag_client(srv_name):
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
+def clear_board_client():
+	"""
+	This is the client for the Service 'clear_board' provided by grab_bag_server
+	"""
+	# if srv_name is not 'make_adjustments':
+	# 	pass
+
+	srv_name = 'clear_board'
+	rospy.wait_for_service(srv_name)
+	try:
+		_srv_clear_board = rospy.ServiceProxy(srv_name, Empty)
+		print("I am clearing the board...")
+		_srv_clear_board()
+		rospy.sleep(1)
+		return _srv_clear_board
+	except rospy.ServiceException, e:
+		print "Service call failed: %s"%e
 
 ####################################################
 # 	SERVICES :: score_keeping_server???
@@ -210,6 +228,7 @@ def sawyer_main_client():
 	num_of_states = len(_srv_names)
 	state_idx = 0
 	sawyer_state = _srv_names[state_idx]
+	count = 0
 
 	tms_initialization()
 	
@@ -263,7 +282,13 @@ def sawyer_main_client():
 			# update_state()
 			state_idx = (state_idx + 1) % num_of_states
 			sawyer_state = _srv_names[state_idx]
+
+			count = count + 1
+
+			if (count % 4 == 0):
+				clear_board_client()
 			print("I am now ready to transition to state: " + str(sawyer_state))
+
 
 		rate.sleep()
 
