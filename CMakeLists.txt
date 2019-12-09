@@ -10,6 +10,7 @@ project(the_mighty_sawyer)
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   actionlib_msgs
+  apriltag_ros
   cv_bridge
   gazebo_ros
   genmsg
@@ -100,7 +101,7 @@ generate_messages(
   actionlib_msgs
   geometry_msgs
   sensor_msgs
-  std_msgs  
+  std_msgs
   apriltag_ros # Or other packages containing msgs
 )
 
