@@ -44,11 +44,20 @@ from the_mighty_sawyer.srv import (
 # 	SERVICES :: sawyer_movement_server
 ####################################################
 
+def tms_initialization():
+	"""
+	Higher-level function that initializes The Mighty Sawyer
+	"""
+	print("Initializing...")
+	start_up_client()
+	target_board_client()
+	go_to_home_pos_client()
+	print("Initialization complete.")
+
 def start_up_client():
 	"""
 	This is the client for the Service 'start_up' provided by sawyer_movement_server
 	"""
-
 	srv_name = 'start_up'
 	rospy.wait_for_service(srv_name)
 	try:
@@ -61,13 +70,13 @@ def start_up_client():
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
-def go_to_home_pos_client(srv_name):
+def go_to_home_pos_client():
 	"""
 	This is the client for the Service 'go_to_home_pos' provided by sawyer_movement_server
 	"""
-	if srv_name is not 'go_to_home_pos':
-		pass
-
+	# if srv_name is not 'go_to_home_pos':
+	# 	pass
+	srv_name = 'go_to_home_pos'
 	rospy.wait_for_service(srv_name)
 	try:
 		_srv_go_to_home_pos = rospy.ServiceProxy(srv_name, Empty)
@@ -75,6 +84,22 @@ def go_to_home_pos_client(srv_name):
 		_srv_go_to_home_pos()
 		rospy.sleep(1)
 		return _srv_go_to_home_pos
+	except rospy.ServiceException, e:
+		print "Service call failed: %s"%e
+
+def target_board_client():
+	"""
+	This is the client for the Service 'target_board' provided by sawyer_movement_server
+	"""
+	
+	srv_name = 'target_board'
+	rospy.wait_for_service(srv_name)
+	try:
+		_srv_target_board = rospy.ServiceProxy(srv_name, Empty)
+		print("I am going to attempt to target the cornhole board...")
+		_srv_target_board()
+		rospy.sleep(1)
+		return _srv_target_board
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
@@ -95,23 +120,6 @@ def overhand_throw_client(srv_name):
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
-# def target_board_client(srv_name):
-# 	"""
-# 	This is the client for the Service 'target_board' provided by sawyer_movement_server
-# 	"""
-# 	if srv_name is not 'target_board':
-# 		pass
-
-# 	rospy.wait_for_service(srv_name)
-# 	try:
-# 		_srv_target_board = rospy.ServiceProxy(srv_name, Empty)
-# 		print("I am going to attempt to target the cornhole board...")
-# 		_srv_target_board()
-# 		rospy.sleep(1)
-# 		return _srv_target_board
-# 	except rospy.ServiceException, e:
-# 		print "Service call failed: %s"%e
-
 def make_adjustments_client(srv_name):
 	"""
 	This is the client for the Service 'make_adjustments' provided by sawyer_movement_server
@@ -123,6 +131,8 @@ def make_adjustments_client(srv_name):
 
 	# _pose_board = Pose()
 	# _pose_bag = Pose()
+
+	go_to_home_pos_client()
 
 	rospy.wait_for_service(srv_name)
 	try:
@@ -193,26 +203,23 @@ def sawyer_main_client():
 	#-- preserve this order until we use something like dictionaries
 	_srv_names = [
 						'grab_bag',
-						'target_board',
-						'go_to_home_pos',
 						'overhand_throw',
 						# 'evaluate_throw_result',
 						'make_adjustments']
 
 	num_of_states = len(_srv_names)
-	state_idx = 1					
-	sawyer_state = _srv_names[state_idx % num_of_states]
+	state_idx = 1			
+	sawyer_state = _srv_names[state_idx]
 
-	start_up_client()
-	print("Initialization complete.")
+	tms_initialization()
 	
+	#== main game loop
 	rate = rospy.Rate(1)
-
 	while not rospy.is_shutdown():
 		print("The current state is: " + str(sawyer_state))
 		print("state_idx: " + str(state_idx))
 		if (sawyer_state not in _srv_names):
-			start_up_client()
+			tms_initialization()
 			
 		elif (sawyer_state is 'grab_bag'):
 			grab_bag_client(sawyer_state)
@@ -221,19 +228,19 @@ def sawyer_main_client():
 			sawyer_state = _srv_names[state_idx]
 			print("I am now ready to transition to state: " + str(sawyer_state))
 
-		elif (sawyer_state is 'target_board'):
-			target_board_client(sawyer_state)
-			# update_state()
-			state_idx = (state_idx + 1) % num_of_states
-			sawyer_state = _srv_names[state_idx]
-			print("I am now ready to transition to state: " + str(sawyer_state))
+		# elif (sawyer_state is 'target_board'):
+		# 	target_board_client(sawyer_state)
+		# 	# update_state()
+		# 	state_idx = (state_idx + 1) % num_of_states
+		# 	sawyer_state = _srv_names[state_idx]
+		# 	print("I am now ready to transition to state: " + str(sawyer_state))
 		
-		elif (sawyer_state is 'go_to_home_pos'):
-			go_to_home_pos_client(sawyer_state)
-			# update_state()
-			state_idx = (state_idx + 1) % num_of_states
-			sawyer_state = _srv_names[state_idx]
-			print("I am now ready to transition to state: " + str(sawyer_state))
+		# elif (sawyer_state is 'go_to_home_pos'):
+		# 	go_to_home_pos_client(sawyer_state)
+		# 	# update_state()
+		# 	state_idx = (state_idx + 1) % num_of_states
+		# 	sawyer_state = _srv_names[state_idx]
+		# 	print("I am now ready to transition to state: " + str(sawyer_state))
 
 		elif (sawyer_state is 'overhand_throw'):
 			overhand_throw_client(sawyer_state)

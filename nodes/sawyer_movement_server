@@ -10,8 +10,6 @@ SERVICES:
     /overhand_throw: executes an overhand
 """
 
-# TODO: get default parameters from yaml file.
-
 from __future__ import division
 import numpy as np
 import rospy
