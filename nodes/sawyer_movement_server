@@ -19,6 +19,7 @@ from the_mighty_sawyer.imagelib import display_png
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse, Trigger, TriggerRequest, TriggerResponse
 from the_mighty_sawyer.srv import GetPose, GetPoseResponse
+from the_mighty_sawyer.srv import TagPose, TagPoseResponse
 from geometry_msgs.msg import Pose
 
 
@@ -36,16 +37,21 @@ class ServClient(object):
         rospy.Service('make_adjustments', Empty, self.make_adjustments_callback)
 
         rospy.wait_for_service('locate_board')
-        self.get_board_pose = rospy.ServiceProxy('shans_service_board', Empty)
+        self.get_board_pose = rospy.ServiceProxy('locate_board', TagPose)
 
         rospy.wait_for_service('locate_recent_bag')
-        self.get_bag_pose = rospy.ServiceProxy('shans_service_bag', Empty)
+        self.get_bag_pose = rospy.ServiceProxy('locate_recent_bag', TagPose)
 
         rospy.wait_for_service('get_team')
         self.get_team = rospy.ServiceProxy('get_team', Trigger)
 
+        self.sawyer.target_pose = TagPoseResponse()
+
         self.team = None
         self.color = (0,0,0)
+
+        self.board = None
+        self.bag = None
 
     def start_up_callback(self, _ignore):
         """
@@ -98,15 +104,18 @@ class ServClient(object):
         self.board = self.get_board_pose()
         self.bag = self.get_bag_pose()
 
-        target_range = ((self.sawyer.target_pose.pose.position.x)**2 + (self.sawyer.target_pose.pose.position.y)**2)**.5
-        current_range = ((self.board.position.x)**2 + (self.board.position.y)**2)**.5
+        target_range = ((self.sawyer.target_pose.pose.position.z)**2 + (self.sawyer.target_pose.pose.position.x)**2)**.5
+        current_range = ((self.board.pose.position.z)**2 + (self.board.pose.position.x)**2)**.5
+
+        rospy.loginfo("Target Range %s", target_range)
+        rospy.loginfo("Current Range %s", current_range)
 
         # If the board pose is farther than 9in, the update
         if abs(current_range - target_range) > 0.2286:
             rospy.loginfo("Board Change Detected -- Updating Target...")
             self.target_board_callback(Empty())
 
-        if self.bag.position.x == 0 and self.bag.position.y == 0:
+        if self.bag.pose.position.x == 0 and self.bag.pose.position.y == 0:
             pass
         else:
             self.update_throw()
@@ -118,6 +127,8 @@ class ServClient(object):
         Function to target the board. This will update the defualt parameters so
         sawyer will target the location of board relative to its default throwing
         location
+
+        z is x and x is y
 
         INPUT:
             data (geometry_msgs/Pose) the current pose of the board.
@@ -131,27 +142,23 @@ class ServClient(object):
         default_board_pose = Pose()
 
         # Location of throw without modifying any parameters
-        default_board_pose.position.x = -0.44
-        default_board_pose.position.y = 0.29
-        default_board_pose.position.z = 3.14
+        default_board_pose.position.x = 0.6134
+        default_board_pose.position.y = 0.1829
+        default_board_pose.position.z = 3.04
 
         # Store the current board pose here
         self.sawyer.target_pose = self.board
 
-        # Used for Testing
-        # self.sawyer.target_pose.pose.position.x = 0.8128
-        # self.sawyer.target_pose.pose.position.y = 1.524
-
         # Calculate the headings of each point relative to the base
-        default_heading = np.arctan2(default_board_pose.position.y, default_board_pose.position.x)
-        target_heading = np.arctan2(self.sawyer.target_pose.pose.position.y, self.sawyer.target_pose.pose.position.x)
+        default_heading = np.arctan2(default_board_pose.position.x, default_board_pose.position.z)
+        target_heading = np.arctan2(self.sawyer.target_pose.pose.position.x, self.sawyer.target_pose.pose.position.z)
 
         # Calculate the change in heading
         dtheta_target = default_heading - target_heading
 
         # Caculate the distance to each point relative to the base
-        default_range = ((default_board_pose.position.x)**2 + (default_board_pose.position.y)**2)**.5
-        target_range = ((self.sawyer.target_pose.pose.position.x)**2 + (self.sawyer.target_pose.pose.position.y)**2)**.5
+        default_range = ((default_board_pose.position.z)**2 + (default_board_pose.position.x)**2)**.5
+        target_range = ((self.sawyer.target_pose.pose.position.z)**2 + (self.sawyer.target_pose.pose.position.x)**2)**.5
 
         # Calulate the percent change in the distance
         drange_target = (default_range - target_range) / (default_range)
