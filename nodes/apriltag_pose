@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+from the_mighty_sawyer.imagelib import set_exposure
 from apriltag_ros.msg import AprilTagDetectionArray
 from the_mighty_sawyer.srv import TagPose
 import numpy as np
@@ -32,6 +33,8 @@ class Tag_Pose(object):
         self.red_bags = {}
         self.blue_bags = {}
         self.team_call = rospy.ServiceProxy('get_team', Trigger)
+
+        set_exposure('head', 22)
 
     def locate_board_callback(self, data):
         """
