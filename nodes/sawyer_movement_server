@@ -50,6 +50,8 @@ class ServClient(object):
         self.team = None
         self.color = (0,0,0)
 
+        self.init_run = True
+
         self.board = None
         self.bag = None
 
@@ -103,6 +105,7 @@ class ServClient(object):
         not to make modifications to the throwing settings
         """
 
+        # Get board and bag pose
         self.board = self.get_board_pose()
         self.bag = self.get_bag_pose()
 
@@ -110,19 +113,31 @@ class ServClient(object):
 
         rospy.loginfo("Distance Between Target and Board %s", distance_change)
 
-        put_text("How'd I do?", self.color)
+        if self.init_run == True:
+            put_text("Ready to play?", (255,255,255))
+        else:
+            put_text("How'd I do?", self.color)
 
         rospy.sleep(1)
+
+        board_update = False
 
         # If the board pose is farther than 9in, the update
         if abs(distance_change) > 0.2286:
             rospy.loginfo("Board Change Detected -- Updating Target...")
-            self.target_board_callback(Empty())
+            self.target_board_callback(Empty)
+            board_update = True
 
-        if self.bag.pose.position.x == 0 and self.bag.pose.position.y == 0:
-            display_png('happy.png', self.color)
-        else:
-            self.update_throw()
+            if self.init_run == False:
+                display_png('angry.png', self.color)
+
+        if self.init_run == False and board_update == False:
+            if self.bag.pose.position.x == 0 and self.bag.pose.position.y == 0:
+                display_png('happy.png', self.color)
+            else:
+                self.update_throw()
+
+        self.init_run = False
 
         return EmptyResponse()
 
@@ -233,7 +248,7 @@ class ServClient(object):
                 needs_adjusting = 1
                 self.sawyer.overhand_throw_speed += .1
 
-                display_png('angry.png', self.color)
+                display_png('sad.png', self.color)
 
                 # Check for a maximum speed setting
                 if self.sawyer.overhand_throw_speed > 1:
