@@ -13,12 +13,13 @@ class Tag_Pose(object):
         self.sub = rospy.Subscriber('tag_detections', AprilTagDetectionArray, self.sub_callback)
         rospy.Service('locate_board', TagPose, self.locate_board_callback)
         rospy.Service('locate_recent_bag',TagPose,self.locate_recent_bag_callback)
+        rospy.Service('clear_board', Empty, self.clear_board_callback)
         self.bag_id = 0
         self.array = np.zeros((9))
 
         self.is_home = False
         self.home_count = 0
-        self.home_count_thresh = 3
+        self.home_count_thresh = 5
         self.board_position = None
         self.board_present = False
         self.tag_vals = None
@@ -35,6 +36,12 @@ class Tag_Pose(object):
         self.team_call = rospy.ServiceProxy('get_team', Trigger)
 
         set_exposure('head', 22)
+
+    def clear_board_callback(self, data):
+        self.bags_found = []
+        self.bag_poses = {}
+
+        return EmptyResponse()
 
     def locate_board_callback(self, data):
         """
@@ -88,7 +95,7 @@ class Tag_Pose(object):
         #     print "   z position: ",
         #     print self.pos_z0
         #     return self.board_position
-        
+
     def locate_recent_bag_callback(self, data):
         """
         returns pose of last bag thrown from sawyer's team

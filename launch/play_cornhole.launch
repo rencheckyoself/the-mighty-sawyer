@@ -13,7 +13,6 @@
     </node>
   <node name="grab_bag_server" pkg="the_mighty_sawyer" type="grab_bag_server"/>
 
-
   <node name="JointTrajectoryActionServer" pkg="intera_interface" type="joint_trajectory_action_server.py" output="screen"/>
   <node name="sawyer_movement_server" pkg="the_mighty_sawyer" type="sawyer_movement_server" output="screen"/>
 
