@@ -9,6 +9,6 @@
  -->
     <include file="$(find the_mighty_sawyer)/launch/continuous_detection.launch" />
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find the_mighty_sawyer)/rviz/web.rviz" />
+<!--  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find the_mighty_sawyer)/rviz/web.rviz" />-->
     <node name="apriltag_pose" pkg="the_mighty_sawyer" type="apriltag_pose" />
 </launch>

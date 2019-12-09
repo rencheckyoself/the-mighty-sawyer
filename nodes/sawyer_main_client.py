@@ -51,7 +51,7 @@ def tms_initialization():
 	print("Initializing...")
 	start_up_client()
 	go_to_home_pos_client()
-	make_adjustments_client()
+	make_adjustments_client('make_adjustments')
 	print("Initialization complete.")
 
 def start_up_client():
@@ -208,7 +208,7 @@ def sawyer_main_client():
 						'make_adjustments']
 
 	num_of_states = len(_srv_names)
-	state_idx = 1			
+	state_idx = 0
 	sawyer_state = _srv_names[state_idx]
 
 	tms_initialization()
@@ -219,8 +219,9 @@ def sawyer_main_client():
 		print("The current state is: " + str(sawyer_state))
 		print("state_idx: " + str(state_idx))
 		if (sawyer_state not in _srv_names):
+			state_idx = 0
+			sawyer_state = _srv_names[state_idx]
 			tms_initialization()
-			
 		elif (sawyer_state is 'grab_bag'):
 			grab_bag_client(sawyer_state)
 			# update_state()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from the_mighty_sawyer.imagelib import set_exposure
+from the_mighty_sawyer.imagelib import set_exposure, switch_camera
 from apriltag_ros.msg import AprilTagDetectionArray
 from the_mighty_sawyer.srv import TagPose
 import numpy as np
@@ -10,6 +10,7 @@ from geometry_msgs.msg import Pose
 
 class Tag_Pose(object):
     def __init__(self):
+        switch_camera('head')
         self.sub = rospy.Subscriber('tag_detections', AprilTagDetectionArray, self.sub_callback)
         rospy.Service('locate_board', TagPose, self.locate_board_callback)
         rospy.Service('locate_recent_bag',TagPose,self.locate_recent_bag_callback)
