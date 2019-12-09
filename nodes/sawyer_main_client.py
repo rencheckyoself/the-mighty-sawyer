@@ -208,7 +208,7 @@ def sawyer_main_client():
 						'make_adjustments']
 
 	num_of_states = len(_srv_names)
-	state_idx = 1			
+	state_idx = 0			
 	sawyer_state = _srv_names[state_idx]
 
 	tms_initialization()
@@ -220,6 +220,8 @@ def sawyer_main_client():
 		print("state_idx: " + str(state_idx))
 		if (sawyer_state not in _srv_names):
 			tms_initialization()
+			state_idx = 0
+			sawyer_state = _srv_names[state_idx]
 			
 		elif (sawyer_state is 'grab_bag'):
 			grab_bag_client(sawyer_state)
