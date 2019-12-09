@@ -118,13 +118,13 @@ class MoveArm(object):
         """
 
         # Joint Angles for home position
-        joint_goal = {'right_j0':-0.3461875,
-                      'right_j1':1.25658984375,
-                      'right_j2':-0.3361435546875,
-                      'right_j3':-1.4039208984375,
-                      'right_j4':0.0998212890625,
-                      'right_j5':-1.4619248046875,
-                      'right_j6':-1.4401328125}
+        joint_goal = {'right_j0':-0.25973828125,
+                      'right_j1':0.727921875,
+                      'right_j2':1.42190625,
+                      'right_j3':-1.5519775390625,
+                      'right_j4':-0.749162109375,
+                      'right_j5':-1.46358984375,
+                      'right_j6':-1.437654296875}
 
         # # OG Home Position
         # joint_goal = {'right_j0':0.003546875,

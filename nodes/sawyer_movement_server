@@ -10,17 +10,17 @@ SERVICES:
     /overhand_throw: executes an overhand
 """
 
-# TODO: get default parameters from yaml file.
-
 from __future__ import division
 import numpy as np
 import rospy
 
 from the_mighty_sawyer import MoveArm
+from the_mighty_sawyer.imagelib import display_png
 
-from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse
+from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse, Trigger, TriggerRequest, TriggerResponse
 from the_mighty_sawyer.srv import GetPose, GetPoseResponse
 from geometry_msgs.msg import Pose
+
 
 class ServClient(object):
 
@@ -35,11 +35,17 @@ class ServClient(object):
         rospy.Service('target_board', Empty, self.target_board_callback)
         rospy.Service('make_adjustments', Empty, self.make_adjustments_callback)
 
-        rospy.wait_for_service('shans_service_board')
+        rospy.wait_for_service('locate_board')
         self.get_board_pose = rospy.ServiceProxy('shans_service_board', Empty)
 
-        rospy.wait_for_service('shans_service_bag')
+        rospy.wait_for_service('locate_recent_bag')
         self.get_bag_pose = rospy.ServiceProxy('shans_service_bag', Empty)
+
+        rospy.wait_for_service('get_team')
+        self.get_team = rospy.ServiceProxy('get_team', Trigger)
+
+        self.team = None
+        self.color = (0,0,0)
 
     def start_up_callback(self, _ignore):
         """
@@ -69,11 +75,25 @@ class ServClient(object):
             1) positions the arm in a ready position
             2) Executes the throwing motion
         """
+
+        if not self.team or self.team == 'None':
+            resp = self.get_team.call(TriggerRequest())
+            self.team = resp.message
+
+            if self.team == 'blue':
+                self.color = (255,0,0)
+            elif self.team == 'red':
+                self.color = (0,0,255)
+
         self.sawyer.do_over_hand_toss()
 
         return EmptyResponse()
 
     def make_adjustments_callback(self, _ignore):
+        """
+        Gets the board pose and the most recent bag pose and decides whether or
+        not to make modifications to the throwing settings
+        """
 
         self.board = self.get_board_pose()
         self.bag = self.get_bag_pose()
@@ -81,11 +101,15 @@ class ServClient(object):
         target_range = ((self.sawyer.target_pose.pose.position.x)**2 + (self.sawyer.target_pose.pose.position.y)**2)**.5
         current_range = ((self.board.position.x)**2 + (self.board.position.y)**2)**.5
 
+        # If the board pose is farther than 9in, the update
         if abs(current_range - target_range) > 0.2286:
             rospy.loginfo("Board Change Detected -- Updating Target...")
             self.target_board_callback(Empty())
 
-        self.update_throw()
+        if self.bag.position.x == 0 and self.bag.position.y == 0:
+            pass
+        else:
+            self.update_throw()
 
         return EmptyResponse()
 
@@ -174,12 +198,17 @@ class ServClient(object):
         rospy.loginfo("Bag distance from Board Location: %s", distance_from_target)
         rospy.loginfo("Bag heading from Board Location: %s", angle_from_target)
 
+        needs_adjusting = 0
+
         # Check for overshoot and undershoot
         # If the distance is greater than 1ft. and the bag is in quadrent 2 or 4
         # Then change the velocity respectively.
         if distance_from_target > 0.3:
             if angle_from_target > 0 and angle_from_target < np.pi/2:
+                needs_adjusting = 1
                 self.sawyer.overhand_throw_speed -= .1
+
+                display_png('sad.png', self.color)
 
                 # Check for a minimum speed setting
                 if self.sawyer.overhand_throw_speed < .6:
@@ -190,7 +219,10 @@ class ServClient(object):
 
 
             elif angle_from_target < -np.pi/2 and angle_from_target > -np.pi:
+                needs_adjusting = 1
                 self.sawyer.overhand_throw_speed += .1
+
+                display_png('angry.png', self.color)
 
                 # Check for a maximum speed setting
                 if self.sawyer.overhand_throw_speed > 1:
@@ -205,6 +237,7 @@ class ServClient(object):
         # Then change the targeting angle
         if distance_from_target > 0.15:
             if (angle_from_target > -np.pi/2 and angle_from_target < 0) or (angle_from_target > np.pi/2 and angle_from_target < np.pi):
+                needs_adjusting = 1
                 rospy.loginfo("Heading too far off -- Updating Throwing Angle")
 
                 target_heading = np.arctan2(self.sawyer.target_pose.pose.position.y, self.sawyer.target_pose.pose.position.x)
@@ -213,6 +246,9 @@ class ServClient(object):
                 dtheta_adjust =  bag_heading - target_heading
 
                 self.sawyer.overhand_target_angle += dtheta_adjust
+
+        if needs_adjusting == 0:
+            display_png('happy.png', self.color)
 
         self.print_params()
 

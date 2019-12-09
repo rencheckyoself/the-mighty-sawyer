@@ -1,0 +1,7 @@
+# I think probably not using this and will just assume red is odd and blue is even
+
+red:
+  [1,3,5,7]
+
+blue:
+  [2,4,6,8]
