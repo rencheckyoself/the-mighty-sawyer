@@ -7,6 +7,10 @@ from the_mighty_sawyer.srv import TagPose
 import numpy as np
 from std_srvs.srv import Empty, EmptyResponse, TriggerResponse, Trigger, TriggerRequest
 from geometry_msgs.msg import Pose
+import math
+
+def get_dist(pose1, pose2)
+    ret math.sqrt((pose1.position.x - pose2.position.x)**2 + (pose1.position.y - pose2.position.y)**2 + (pose1.position.z - pose2.position.z)**2)
 
 class Tag_Pose(object):
     def __init__(self):
@@ -28,6 +32,14 @@ class Tag_Pose(object):
 
         self.bags_found = []
         self.bag_poses = {}
+        self.red_score = []
+        self.blue_score = []
+
+        self.current_round_red_score = 0
+        self.current_round_red_score = 0
+
+        self.red_score_total = []
+        self.blue_score_total = []
 
         self.red_bags_found = []
         self.blue_bags_found = []
@@ -39,8 +51,19 @@ class Tag_Pose(object):
         set_exposure('head', 22)
 
     def clear_board_callback(self, data):
+        self.red_score_total += self.current_round_red_score
+        self.blue_score_total += self.current_round_blue_score
+
         self.bags_found = []
         self.bag_poses = {}
+        self.red_score = []
+        self.blue_score = []
+        self.current_round_red_score = 0
+        self.current_round_blue_score = 0
+
+        put_text('New Score:')
+        rospy.sleep(1)
+        put_text('B  ' + str(self.blue_score_total) + ' - ' + str(self.red_score_total) + '  R')
 
         return EmptyResponse()
 
@@ -102,6 +125,7 @@ class Tag_Pose(object):
         returns pose of last bag thrown from sawyer's team
         reaturns pose 0 0 0, 0 0 0 0 if no new bag found (presumably because it's in the hole)
         """
+        raw_input('Press enter when turn complete.')
         if not self.team or self.team == 'None':
             resp = self.team_call.call(TriggerRequest())
             self.team = resp.message
@@ -121,13 +145,43 @@ class Tag_Pose(object):
         self.bags_found.extend(new_bags)
         new_bag = None
 
+        blue_present = False
+        red_present = False
         for id_ in new_bags:
-            if self.team == 'blue':
-                if not id_ % 2:
+            dist = get_dist(self.board_position, self.bag_poses[id_])
+            if dist < .4:
+                score = 1
+            else:
+                score = 0
+
+            if not id_ % 2:
+                blue_present = True
+                self.blue_score.append(score)
+                if self.team == 'blue':
                     new_bag = id_
             else:
-                if id_ % 2:
+                red_present = True
+                self.red_score.append(score)
+                if self.team = 'red'
                     new_bag = id_
+
+        if not blue_present:
+            self.blue_score.append(3)
+        elif not red_present:
+            self.red_score.append(3)
+
+        self.current_round_red_score = sum(self.red_score) - sum(self.blue_score)
+        self.current_round_blue_score = -self.current_round_red_score
+        put_text('Current round:')
+        rospy.sleep(1)
+        if not self.self.current_round_red_score and not self.current_round_blue_score:
+            put_text('B  0 - 0  R')
+        elif self.current_round_red_score > 0:
+            self.current_round_blue_score = 0
+            put_text('B  0 - ' + str(self.current_round_red_score) + '  R')
+        else:
+            self.current_round_blue_score = 0
+            put_text('B  '+ str(self.current_round_blue_score) + ' - 0  R')
 
         if new_bag:
             ret = self.bag_poses[new_bag]
