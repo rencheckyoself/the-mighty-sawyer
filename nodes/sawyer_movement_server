@@ -15,7 +15,7 @@ import numpy as np
 import rospy
 
 from the_mighty_sawyer import MoveArm
-from the_mighty_sawyer.imagelib import display_png
+from the_mighty_sawyer.imagelib import display_png, put_text
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse, Trigger, TriggerRequest, TriggerResponse
 from the_mighty_sawyer.srv import GetPose, GetPoseResponse
@@ -61,6 +61,8 @@ class ServClient(object):
 
         This should be called first before trying to interact with the robot
         """
+
+        put_text(' ', bg_color=(0, 0, 0))
         self.sawyer.initializaton()
 
         return EmptyResponse()
@@ -104,19 +106,21 @@ class ServClient(object):
         self.board = self.get_board_pose()
         self.bag = self.get_bag_pose()
 
-        target_range = ((self.sawyer.target_pose.pose.position.z)**2 + (self.sawyer.target_pose.pose.position.x)**2)**.5
-        current_range = ((self.board.pose.position.z)**2 + (self.board.pose.position.x)**2)**.5
+        distance_change = ((self.sawyer.target_pose.pose.position.z - self.board.pose.position.z)**2 + (self.sawyer.target_pose.pose.position.x - self.board.pose.position.x)**2)**.5
 
-        rospy.loginfo("Target Range %s", target_range)
-        rospy.loginfo("Current Range %s", current_range)
+        rospy.loginfo("Distance Between Target and Board %s", distance_change)
+
+        put_text("How'd I do?", self.color)
+
+        rospy.sleep(1)
 
         # If the board pose is farther than 9in, the update
-        if abs(current_range - target_range) > 0.2286:
+        if abs(distance_change) > 0.2286:
             rospy.loginfo("Board Change Detected -- Updating Target...")
             self.target_board_callback(Empty())
 
         if self.bag.pose.position.x == 0 and self.bag.pose.position.y == 0:
-            pass
+            display_png('happy.png', self.color)
         else:
             self.update_throw()
 
@@ -196,8 +200,8 @@ class ServClient(object):
         # data.pose.position.y = 1.8288
 
         # Get Range and heading from target to the bag
-        x_diff_throw = data.pose.position.x - self.sawyer.target_pose.pose.position.x
-        y_diff_throw = data.pose.position.y - self.sawyer.target_pose.pose.position.y
+        x_diff_throw = data.pose.position.z - self.sawyer.target_pose.pose.position.z
+        y_diff_throw = data.pose.position.x - self.sawyer.target_pose.pose.position.x
 
         distance_from_target = ((x_diff_throw)**2 + (y_diff_throw)**2)**.5
         angle_from_target = np.arctan2(y_diff_throw, x_diff_throw)
@@ -211,7 +215,7 @@ class ServClient(object):
         # If the distance is greater than 1ft. and the bag is in quadrent 2 or 4
         # Then change the velocity respectively.
         if distance_from_target > 0.3:
-            if angle_from_target > 0 and angle_from_target < np.pi/2:
+            if angle_from_target > np.pi/2 and angle_from_target < np.pi:
                 needs_adjusting = 1
                 self.sawyer.overhand_throw_speed -= .1
 
@@ -225,7 +229,7 @@ class ServClient(object):
                     rospy.loginfo("Overshoot Detected -- Decreasing throwing speed")
 
 
-            elif angle_from_target < -np.pi/2 and angle_from_target > -np.pi:
+            elif angle_from_target < 0 and angle_from_target > -np.pi/2:
                 needs_adjusting = 1
                 self.sawyer.overhand_throw_speed += .1
 
@@ -243,16 +247,17 @@ class ServClient(object):
         # quadrent 1 or 3,
         # Then change the targeting angle
         if distance_from_target > 0.15:
-            if (angle_from_target > -np.pi/2 and angle_from_target < 0) or (angle_from_target > np.pi/2 and angle_from_target < np.pi):
+            if (angle_from_target > 0 and angle_from_target < np.pi/2) or (angle_from_target < -np.pi/2 and angle_from_target > -np.pi):
                 needs_adjusting = 1
                 rospy.loginfo("Heading too far off -- Updating Throwing Angle")
 
-                target_heading = np.arctan2(self.sawyer.target_pose.pose.position.y, self.sawyer.target_pose.pose.position.x)
-                bag_heading = np.arctan2(data.pose.position.y, data.pose.position.x)
+                target_heading = np.arctan2(self.sawyer.target_pose.pose.position.x, self.sawyer.target_pose.pose.position.z)
+                bag_heading = np.arctan2(data.pose.position.x, data.pose.position.z)
 
                 dtheta_adjust =  bag_heading - target_heading
 
                 self.sawyer.overhand_target_angle += dtheta_adjust
+                display_png('sad.png', self.color)
 
         if needs_adjusting == 0:
             display_png('happy.png', self.color)
