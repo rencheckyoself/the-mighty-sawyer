@@ -53,16 +53,29 @@ source devel/setup.bash
 ```
 3. Launching project
 ```
-roslaunch the_mighty_sawyer <Project_Launch_Filename>.launch
+roslaunch the_mighty_sawyer play_cornhole.launch
 ```
 
 # Computer Vision
 
 # Throwing
+Since Sawyer is not the fastest robot, the throwing motion attempts to leverage as many joints as possible while also taking advantage of the full arm length. Sawyer executes an overhand throw, by positioning the arm behind it self. It then actuates joint 1, 3, and 5 to maximize velocity in the direction of the throw. During the trajectory, the grippers will open near the peak, releasing the bag. **Be sure that Sawyer's arm can be fully extended in all directions without hitting anything in the environment before running.**
+
+Sawyer will also attempt to target the cornhole board and it will also make adjustments based on the result of each throw by referencing the respective April tags. These features are both accomplished using the distance and heading calculations between sawyer, the board, and the most recently thrown bag.
 
 # Manipulation
 
+# Notes
+## Lessons Learned
+ - Throwing is a task so intuitive for a human that we rarely stop to realize the complexities of what is actually happening. The amount of hand control and sensory feedback a person has and can actually interpret far surpasses what a robot has access to. That being said, the great advantage a robot has over a person is the precision and repeatability.
+
+## Future Work
+ - The targeting features are currently restricted to the area to Sawyer's front left. For further development, we would ideally have the head camera scan until it found the board then select a throwing configuration based on that.
+ - Also we would like to try to remove the dependency on April tags. This may prove to be too difficult for the bag detection with Sawyer's built in cameras, but the board should be possible.
+
 # Development Notes
+
+
 ## Getting started
 Fork the GitHub Classroom repository from [here](https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git).  This means that you are creating a clone of the entire Classroom repo and placing a copy in your own personal GitHub repo; this is called a fork.  You will be mostly working with the fork you have created during development.
 
@@ -96,14 +109,14 @@ git remote -v
 ```
 
 ## Syncing your fork with the upstream repo
-If the `upstream` manages to somehow become ahead of your fork repo, here's how you can catch up. 
+If the `upstream` manages to somehow become ahead of your fork repo, here's how you can catch up.
 
 1. Open Terminal.
-2. 
+2.
 ```
 roscd the-mighty-sawyer
 ```
-or 
+or
 ```
 cd ~/catkin_ws/src/the-mighty-sawyer/
 ```
