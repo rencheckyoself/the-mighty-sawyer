@@ -132,7 +132,7 @@ class ServClient(object):
 
         board_update = False
 
-        # If the board pose is farther than 9in, the update
+        # If the board pose has changed then update
         if abs(distance_change) > 0.5:
             rospy.loginfo("Board Change Detected -- Updating Target...")
             self.target_board_callback(Empty)

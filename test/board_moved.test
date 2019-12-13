@@ -1,8 +1,0 @@
-<launch>
-
-<include file="$(find the_mighty_sawyer)/launch/continuous_detection.launch" />
-<node name="apriltag_pose" pkg="the_mighty_sawyer" type="apriltag_pose" output="screen"/>
-
-<test test-name="board_moved" pkg="the_mighty_sawyer" type="board_moved_tests.py" />
-
-</launch>

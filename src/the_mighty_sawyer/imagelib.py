@@ -17,7 +17,7 @@ import intera_interface, intera_io
 def switch_camera(cam):
     """
     Change active camera feed on Sawyer
-    args- cam (arm, head)
+    :param cam:  (string) camera to activate (head, arm)
     """
 
     if cam == 'head':
@@ -30,14 +30,13 @@ def switch_camera(cam):
         raise Exception("Invalid Argument. Cam must be 'arm' or 'head'")
 
 
-def camera_command_client(camera, status, timeout=0.0):
+def _camera_command_client(camera, status, timeout=0.0):
     """
     based on https://www.aransena.com/blog/2018/1/11/rethink-robotics-sawyer-camera-access
     client to process Sawyer camera commands
-    :param camera:
-    :param status:
-    :param timeout:
-    :return:
+    :param camera:  (string) camera name
+    :param status:  (Bool) Enable/disable
+    :param timeout:  (float) timeout
     """
     rospy.wait_for_service('/io/internal_camera/' + camera + '/command')
     try:
@@ -60,7 +59,6 @@ def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thic
     """
     Write text to Sawyer's display screen
 
-    get emojis here: https://emojiisland.com/pages/free-download-emoji-icons-png
 
     :param text:  string- test to displya
     :param bg_color:  (b,g,r)- background color
@@ -94,7 +92,12 @@ def put_text(text, bg_color = (255,255,255), text_color = (0,0,0), scale=3, thic
 
 def display_png(img_name, bg_color=(255,255,255)):
     """
-    Displays a png image from imagaes/display directory on Sawyer's screen.
+    Displays a png image from imagaes/display directory on Sawyer's screen. Cannot handle images larger than
+    1024 x 600.
+    Good emojis here: https://emojiisland.com/pages/free-download-emoji-icons-png
+    :param img_name:  (string) - name of image to display
+    :param bg_color:  (b, g, r) color to make background
+
     """
     disp = intera_interface.HeadDisplay()
 
