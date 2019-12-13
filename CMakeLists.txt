@@ -240,8 +240,6 @@ install(PROGRAMS
   scripts/set_exposure.py
   scripts/sub_locate_board
   scripts/switch_camera.py
-  #scripts/test_action_server_client
-  #scripts/test_action_server_server
   scripts/test_movement_server.py
   scripts/throwing_beanbag
   src/${PROJECT_NAME}/imagelib.py
