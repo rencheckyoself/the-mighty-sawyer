@@ -75,7 +75,6 @@ In addition, the team developed a [simple state machine](#simple-state-machine) 
 └── srv
     ├── EvaluateThrowResult.srv
     ├── ExecuteThrow.srv
-    ├── GetPose.srv
     ├── GrabBag.srv
     ├── MoveToThrowPos.srv
     ├── SawyerStates.srv
@@ -132,7 +131,7 @@ The image below shows the iterative prototyping process for how we developed the
 # Human robot interaction
 Sawyer relies on a human player to show it a bag using the wrist camera and place it in the gripper when instructed by the screen. Sawyer will assume it is on the team of the first color bag you try to hand it. One it has a team set, it can detect when you hand it the wrong color bag.
 
-It is also able to respond to a human player moving the board mid game. If Sawyer detects the board has shifted too far from the previously known position, it will display and angry emoji and retarget before the next throw.
+It is also able to respond to a human player moving the board mid game. If Sawyer detects the board has shifted too far from the previously known position, it will display and angry emoji and re-target before the next throw.
 
 # Simple state machine
 

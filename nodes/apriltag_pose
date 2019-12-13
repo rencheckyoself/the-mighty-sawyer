@@ -158,39 +158,6 @@ class Tag_Pose(object):
         return self.board_position
 
 
-        # try:
-        #     if self.tag_vals.detections[0].id == (0,):
-        #
-        #         self.pos_x0 = self.tag_vals.detections[0].pose.pose.pose.position.x
-        #         self.pos_y0 = self.tag_vals.detections[0].pose.pose.pose.position.y
-        #         self.pos_z0 = self.tag_vals.detections[0].pose.pose.pose.position.z
-        #         self.tag_id0 = self.tag_vals.detections[0].id
-        #         self.board_position = self.tag_vals.detections[0].pose.pose.pose
-        #         # printing first tags pose
-        #         print "tag: ",
-        #         print self.tag_id0
-        #         print 'x position: ',
-        #         print self.pos_x0,
-        #         print "   y position: ",
-        #         print self.pos_y0,
-        #         print "   z position: ",
-        #         print self.pos_z0
-        #         return self.board_position
-        #     elif self.tag_vals.detections[0].id != (0,):
-        #         return self.board_position
-        #
-        # except IndexError:
-        #     # printing first tags pose
-        #     print "tag: ",
-        #     print self.tag_id0
-        #     print 'x position: ',
-        #     print self.pos_x0,
-        #     print "   y position: ",
-        #     print self.pos_y0,
-        #     print "   z position: ",
-        #     print self.pos_z0
-        #     return self.board_position
-
     def locate_recent_bag_callback(self, data):
         """
         Callback for /locate_recent_bag Service.
@@ -258,15 +225,6 @@ class Tag_Pose(object):
 
         put_text('B  ' + str(blue_disp) + ' - ' + str(red_disp) + '  R')
 
-        # if not self.current_round_red_score and not self.current_round_blue_score:
-        #     put_text('B  0 - 0  R')
-        # elif self.current_round_red_score > 0:
-        #     self.current_round_blue_score = 0
-        #     put_text('B  0 - ' + str(self.current_round_red_score) + '  R')
-        # else:
-        #     self.current_round_blue_score = 0
-        #     put_text('B  '+ str(self.current_round_blue_score) + ' - 0  R')
-
         rospy.loginfo(new_bags)
         rospy.loginfo(self.bags_found)
         rospy.loginfo(self.current_round_red_score)
@@ -285,27 +243,11 @@ class Tag_Pose(object):
 
         return ret
 
-        # try:
-        #     for x in range(9):
-        #         print x
-        #         self.bag_id = self.tag_vals.detections[x].id
-        #         if self.bag_id != (0,):
-        #             self.bag = self.tag_vals.detections[x].pose.pose.pose
-        #     print self.bag_id
-        #     return self.bag
-        # except IndexError:
-        #     if self.bag_id != (0,):
-        #         self.bag = self.tag_vals.detections[x-1].pose.pose.pose
-        #         print self.bag_id
-        #         print x
-        #         return self.bag
-        #     else:
-        #         print x
-        #         return []
-
     def sub_callback(self, data):
         """
         Callback for /tag_detections Subscriber topic from AprilTagDetection
+
+        Retrives data published by apriltags node
         """
         if self.is_home:
             self.home_count += 1

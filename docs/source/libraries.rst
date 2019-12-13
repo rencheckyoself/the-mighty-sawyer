@@ -10,3 +10,9 @@ Image Library
 =================
 .. automodule:: the_mighty_sawyer.imagelib
    :members:
+
+
+Helper Functions
+=================
+.. automodule:: the_mighty_sawyer.tms_helper_functions
+  :members:

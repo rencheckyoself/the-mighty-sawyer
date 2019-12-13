@@ -1,3 +1,5 @@
+""" Make the contents of this library easily accessable to package """
+
 from .imagelib import (
 	display_png,
 	put_text,
@@ -10,4 +12,4 @@ from .sawyer_controller import (
 from .tms_helper_functions import (
 	find_true,
 	get_dist,
-	get_params_from_yaml) 
+	get_params_from_yaml)

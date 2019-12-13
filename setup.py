@@ -9,6 +9,6 @@ d = generate_distutils_setup(
     # scripts = ['scripts/script1.py', 'scripts/script2.py'],
     package_dir={'' : 'src'}
 )
-   
+
 
 setup(**d)

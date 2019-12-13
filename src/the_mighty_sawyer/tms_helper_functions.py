@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+""" General Helper Functions"""
 from __future__ import (
 	division,
 	print_function)

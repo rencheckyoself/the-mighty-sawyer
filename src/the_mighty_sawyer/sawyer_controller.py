@@ -130,15 +130,6 @@ class MoveArm(object):
                       'right_j5':-1.46358984375,
                       'right_j6':-1.437654296875}
 
-        # # OG Home Position
-        # joint_goal = {'right_j0':0.003546875,
-        #               'right_j1':-0.5124091796875,
-        #               'right_j2':0.0377041015625,
-        #               'right_j3':1.8277978515625,
-        #               'right_j4':-0.048537109375,
-        #               'right_j5':-2.8403095703125,
-        #               'right_j6':-1.39}
-
         # Set motion speed
         self.limb.set_joint_position_speed(speed=0.3)
 
@@ -252,14 +243,6 @@ class MoveArm(object):
                       'right_j4':-1.60975390625,
                       'right_j5':2.5}
 
-        # Position that is not fully drawn back
-        # joint_goal = {'right_j0':-1.5,
-        #               'right_j1':0.0190947265625,
-        #               'right_j2':cur_joint_angles[self.joint_names[2]],
-        #               'right_j3':1.5639794921875,
-        #               'right_j4':-1.60975390625,
-        #               'right_j5':1}
-
         # Actuate arm
         self.limb.set_joint_position_speed(speed=0.3)
         self.limb.move_to_joint_positions(joint_goal)
@@ -268,9 +251,6 @@ class MoveArm(object):
 
         # Second motion joint position values
         joint_goal = {'right_j2':-1.5}
-
-        # Position that is not fully drawn back
-        # joint_goal = {'right_j2':-.5}
 
         # Actuate Arm
         self.limb.set_joint_position_speed(speed=0.3)
@@ -306,8 +286,8 @@ class MoveArm(object):
 
             # Check if joint has passed the release threshold
             if cur_joint_angles[self.joint_names[2]] >= self.underhand_release_angle and release == 0:
-                    self.OpenGripper()
-                    release = 1
+                self.OpenGripper()
+                release = 1
 
     def do_over_hand_toss(self, release_angle=None, throwing_speed=None, target_angle=None):
         """
@@ -404,6 +384,6 @@ class MoveArm(object):
 
             # Check if joint has passed the release threshold
             if cur_joint_angles[self.joint_names[1]] <= -1.3 and release == 0:
-                    rospy.loginfo("Open Grippers")
-                    self.OpenGripper()
-                    release = 1
+                rospy.loginfo("Open Grippers")
+                self.OpenGripper()
+                release = 1
