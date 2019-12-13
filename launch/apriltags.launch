@@ -1,14 +1,21 @@
 <launch>
- <!--
+
+  <arg name='webcam' default='False'/> <!-- set to True to use computer web cam -->
+
+  <group if="$(arg webcam)">
     <node pkg="usb_cam" type="usb_cam_node" name="usb_cam">
 
       <param name="pixel_format" value="yuyv"/>
     </node>
-
     <node pkg="image_proc" type="image_proc" name="image_proc" ns = "usb_cam"/>
- -->
-    <include file="$(find the_mighty_sawyer)/launch/continuous_detection.launch" />
+  </group>
 
+  <!-- Include file to configure apriltags -->
+  <include file="$(find the_mighty_sawyer)/launch/continuous_detection.launch" />
+
+  <!-- Launch rviz to see the output -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find the_mighty_sawyer)/rviz/web.rviz" />
+
+  <!-- Launch Custom node with locating services -->
   <node name="apriltag_pose" pkg="the_mighty_sawyer" type="apriltag_pose" />
 </launch>

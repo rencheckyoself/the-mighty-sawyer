@@ -12,6 +12,7 @@
     </include>
   </group>
 
+  <!-- Launches the custom node to offer movement services -->
   <node name="JointTrajectoryActionServer" pkg="intera_interface" type="joint_trajectory_action_server.py" output="screen"/>
   <node name="sawyer_movement_server" pkg="the_mighty_sawyer" type="sawyer_movement_server" output="screen"/>
 

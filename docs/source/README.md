@@ -64,6 +64,13 @@ Since Sawyer is not the fastest robot, the throwing motion attempts to leverage 
 Sawyer will also attempt to target the cornhole board and it will also make adjustments based on the result of each throw by referencing the respective April tags. These features are both accomplished using the distance and heading calculations between sawyer, the board, and the most recently thrown bag.
 
 # Manipulation
+During various throwing tests, sawyer had about a 90% success rate, the other 10% had the bag slip out of Sawyer's grippers before it reached the peak of its throw. Also as the throwing motion slowed down to target a board position closer to itself, the bag would tend to fall out the back of the gripper.
+
+To solve this the group, added a glove attached to the grippers. Basically, it is a pouch to support the bag as the arm starts to throw. Then when the grippers release at the top of the throw, the glove ensures the bag is thrown forward.
+
+The image below shows the iterative prototyping process for how we developed the glove. We used the tape version to quickly experiment with the shape and use the smaller suade version to experiment with various materials. The final version is a combination of all the learning from the iterations.
+
+![rqt_plot](rqt_plot.png)
 
 # Notes
 ## Lessons Learned

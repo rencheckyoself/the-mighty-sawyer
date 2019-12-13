@@ -24,9 +24,6 @@ from the_mighty_sawyer import (
 from the_mighty_sawyer import (
 	MoveArm)
 
-from the_mighty_sawyer.srv import (
-	GetPose)
-
 ####################################################
 # 	SERVICES :: sawyer_movement_server
 ####################################################

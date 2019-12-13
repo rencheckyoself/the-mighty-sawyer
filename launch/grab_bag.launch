@@ -1,6 +1,6 @@
 <launch>
 
-<!--I'm not sure if the find_object_node can be launched before the camera_converter node-->
+  <!-- launch object detection and bag detection services -->
   <node name="camera_converter" pkg="the_mighty_sawyer" type="camera_converter"/>
     <node name="find_object_2d" pkg="find_object_2d" type="find_object_2d" args="image:=image_converted">
         <param name="~gui" value="false"/>

@@ -6,13 +6,14 @@
 ## Project description
 This was roughly a four week project that required manipulation, sensing, and human interaction using a [Rethink Robotics' Sawyer robot](https://www.rethinkrobotics.com/sawyer).  The theme, for all the course projects, was Recreational Robotics.  Our team of four chose [cornhole](https://en.wikipedia.org/wiki/Cornhole), a lawn game popular in North America and Europe.  We thought it was a perfect recreational activity to play with a 7 degree-of-freedom, (roughly) 4 foot robotic arm.
 
-This project uses Sawyer's wrist camera and the `find_object_2d` package to detect and grasp beanbags; standard grippers, with a custom (engraved) glove, for securing the bag during throws; the `intera_interface` API to send joint commands for throwing; and [AprilTag](http://wiki.ros.org/apriltag_ros) ROS package to estimate cornhole board and bag poses.  Simple scorekeeping strategy was also implemented for Sawyer using these tools.
+This project uses Sawyer's wrist camera and the `find_object_2d` package to detect and grasp beanbags; standard grippers, with a custom (engraved) glove, for securing the bag during throws; the `intera_interface` API to send joint commands for throwing; and [AprilTag](http://wiki.ros.org/apriltag_ros) ROS package to estimate cornhole board and bag poses.  Simple score keeping strategy was also implemented for Sawyer using these tools.
 
 ## Overview
 This project included four major parts:
 1. [Computer vision](#computer-vision)
 2. [Throwing](#throwing)
-3. [Human robot interaction](#human-robot-interaction)
+3. [Manipulation](#manipulation)
+4. [Human robot interaction](#human-robot-interaction)
 
 In addition, the team developed a [simple state machine](#simple-state-machine) and some gazebo simulation capabilities mostly for testing offline.
 
@@ -43,13 +44,13 @@ In addition, the team developed a [simple state machine](#simple-state-machine) 
 │       ├── 5.png
 │       ├── 6.png
 │       └── 7.png
-├── launch
+├── launch - See file comments for more detail
 │   ├── apriltags.launch - included continuous_detection.launch and launches rviz
 │   ├── continuous_detection.launch - everything necessary for april tags
 │   ├── grab_bag.launch - launch node containing services to grab a bag
 │   ├── play_cornhole.launch - launch all nodes to play cornhole with sawyer
 │   └── sawyer_sim.launch - launch node containing services to move the arm in simulation
-├── nodes
+├── nodes - See file docstrings for more detail
 │   ├── apriltag_pose - provides services to get the pose from april tags
 │   ├── camera_converter - converts the camera image from Sawyer
 │   ├── grab_bag_server - provides service to grab the bag from a player
@@ -118,6 +119,16 @@ Since Sawyer is not the fastest robot, the throwing motion attempts to leverage 
 
 Sawyer will also attempt to target the cornhole board and it will also make adjustments based on the result of each throw by referencing the respective April tags. These features are both accomplished using the distance and heading calculations between sawyer, the board, and the most recently thrown bag.
 
+# Manipulation
+During various throwing tests, sawyer had about a 90% success rate, the other 10% had the bag slip out of Sawyer's grippers before it reached the peak of its throw. Also as the throwing motion slowed down to target a board position closer to itself, the bag would tend to fall out the back of the gripper.
+
+To solve this the group, added a glove attached to the grippers. Basically, it is a pouch to support the bag as the arm starts to throw. Then when the grippers release at the top of the throw, the glove ensures the bag is thrown forward.
+
+The image below shows the iterative prototyping process for how we developed the glove. We used the tape version to quickly experiment with the shape and use the smaller suade version to experiment with various materials. The final version is a combination of all the learning from the iterations.
+
+![prototypes](docs/pics/prototypes.png)
+![glove on sawyer](docs/pics/glove_on_sawyer.png)
+
 # Human robot interaction
 Sawyer relies on a human player to show it a bag using the wrist camera and place it in the gripper when instructed by the screen. Sawyer will assume it is on the team of the first color bag you try to hand it. One it has a team set, it can detect when you hand it the wrong color bag.
 
@@ -128,3 +139,5 @@ It is also able to respond to a human player moving the board mid game. If Sawye
 # References
 [Sphinx API](https://rencheckyoself.github.io/the-mighty-sawyer/)
 [Final Video on YouTube](https://www.youtube.com/watch?v=GHv42RLQk-g&t=5s)
+[Bag Handoff Demo](https://youtu.be/lZPUK0xGsRU)
+[Targeting Demo](https://youtu.be/ffp8pguVMzQ)
