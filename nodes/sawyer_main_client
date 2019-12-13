@@ -12,9 +12,9 @@ from geometry_msgs.msg import (
 	PoseWithCovariance)
 
 from std_srvs.srv import (
-	Empty, 
-	EmptyResponse, 
-	SetBool, 
+	Empty,
+	EmptyResponse,
+	SetBool,
 	SetBoolResponse)
 
 from the_mighty_sawyer import (
@@ -26,7 +26,6 @@ from the_mighty_sawyer import (
 
 from the_mighty_sawyer.srv import (
 	GetPose)
-
 
 ####################################################
 # 	SERVICES :: sawyer_movement_server
@@ -162,7 +161,6 @@ def clear_board_client():
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
-
 def sawyer_main_client():
 	"""
 	This is the sawyer's main Service client that governs all of sawyer's Services
@@ -183,7 +181,7 @@ def sawyer_main_client():
 	_count = 0
 
 	tms_initialization()
-	
+
 	#== main game loop
 	rate = rospy.Rate(1)
 	while not rospy.is_shutdown():
@@ -214,7 +212,6 @@ def sawyer_main_client():
 			print("I am now ready to transition to state: " + str(sawyer_state))
 
 		rate.sleep()
-				
 
 if __name__ == '__main__':
 	try:
