@@ -15,10 +15,11 @@ import numpy as np
 import rospy
 
 from the_mighty_sawyer import MoveArm
-from the_mighty_sawyer.imagelib import display_png
+from the_mighty_sawyer.imagelib import display_png, put_text
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse, Trigger, TriggerRequest, TriggerResponse
 from the_mighty_sawyer.srv import GetPose, GetPoseResponse
+from the_mighty_sawyer.srv import TagPose, TagPoseResponse
 from geometry_msgs.msg import Pose
 
 
@@ -36,16 +37,23 @@ class ServClient(object):
         rospy.Service('make_adjustments', Empty, self.make_adjustments_callback)
 
         rospy.wait_for_service('locate_board')
-        self.get_board_pose = rospy.ServiceProxy('shans_service_board', Empty)
+        self.get_board_pose = rospy.ServiceProxy('locate_board', TagPose)
 
         rospy.wait_for_service('locate_recent_bag')
-        self.get_bag_pose = rospy.ServiceProxy('shans_service_bag', Empty)
+        self.get_bag_pose = rospy.ServiceProxy('locate_recent_bag', TagPose)
 
         rospy.wait_for_service('get_team')
         self.get_team = rospy.ServiceProxy('get_team', Trigger)
 
+        self.sawyer.target_pose = TagPoseResponse()
+
         self.team = None
         self.color = (0,0,0)
+
+        self.init_run = True
+
+        self.board = None
+        self.bag = None
 
     def start_up_callback(self, _ignore):
         """
@@ -55,6 +63,8 @@ class ServClient(object):
 
         This should be called first before trying to interact with the robot
         """
+
+        put_text(' ', bg_color=(0, 0, 0))
         self.sawyer.initializaton()
 
         return EmptyResponse()
@@ -95,21 +105,39 @@ class ServClient(object):
         not to make modifications to the throwing settings
         """
 
+        # Get board and bag pose
         self.board = self.get_board_pose()
         self.bag = self.get_bag_pose()
 
-        target_range = ((self.sawyer.target_pose.pose.position.x)**2 + (self.sawyer.target_pose.pose.position.y)**2)**.5
-        current_range = ((self.board.position.x)**2 + (self.board.position.y)**2)**.5
+        distance_change = ((self.sawyer.target_pose.pose.position.z - self.board.pose.position.z)**2 + (self.sawyer.target_pose.pose.position.x - self.board.pose.position.x)**2)**.5
+
+        rospy.loginfo("Distance Between Target and Board %s", distance_change)
+
+        if self.init_run == True:
+            put_text("Ready to play?", (255,255,255))
+        else:
+            put_text("How'd I do?", self.color)
+
+        rospy.sleep(1)
+
+        board_update = False
 
         # If the board pose is farther than 9in, the update
-        if abs(current_range - target_range) > 0.2286:
+        if abs(distance_change) > 0.5:
             rospy.loginfo("Board Change Detected -- Updating Target...")
-            self.target_board_callback(Empty())
+            self.target_board_callback(Empty)
+            board_update = True
 
-        if self.bag.position.x == 0 and self.bag.position.y == 0:
-            pass
-        else:
-            self.update_throw()
+            if self.init_run == False:
+                display_png('angry.png', self.color)
+
+        if self.init_run == False and board_update == False:
+            if self.bag.pose.position.x == 0 and self.bag.pose.position.y == 0:
+                display_png('happy.png', self.color)
+            else:
+                self.update_throw()
+
+        self.init_run = False
 
         return EmptyResponse()
 
@@ -118,6 +146,8 @@ class ServClient(object):
         Function to target the board. This will update the defualt parameters so
         sawyer will target the location of board relative to its default throwing
         location
+
+        z is x and x is y
 
         INPUT:
             data (geometry_msgs/Pose) the current pose of the board.
@@ -131,27 +161,23 @@ class ServClient(object):
         default_board_pose = Pose()
 
         # Location of throw without modifying any parameters
-        default_board_pose.position.x = -0.44
-        default_board_pose.position.y = 0.29
-        default_board_pose.position.z = 3.14
+        default_board_pose.position.x = 0.6134
+        default_board_pose.position.y = 0.1829
+        default_board_pose.position.z = 3.04
 
         # Store the current board pose here
         self.sawyer.target_pose = self.board
 
-        # Used for Testing
-        # self.sawyer.target_pose.pose.position.x = 0.8128
-        # self.sawyer.target_pose.pose.position.y = 1.524
-
         # Calculate the headings of each point relative to the base
-        default_heading = np.arctan2(default_board_pose.position.y, default_board_pose.position.x)
-        target_heading = np.arctan2(self.sawyer.target_pose.pose.position.y, self.sawyer.target_pose.pose.position.x)
+        default_heading = np.arctan2(default_board_pose.position.x, default_board_pose.position.z)
+        target_heading = np.arctan2(self.sawyer.target_pose.pose.position.x, self.sawyer.target_pose.pose.position.z)
 
         # Calculate the change in heading
         dtheta_target = default_heading - target_heading
 
         # Caculate the distance to each point relative to the base
-        default_range = ((default_board_pose.position.x)**2 + (default_board_pose.position.y)**2)**.5
-        target_range = ((self.sawyer.target_pose.pose.position.x)**2 + (self.sawyer.target_pose.pose.position.y)**2)**.5
+        default_range = ((default_board_pose.position.z)**2 + (default_board_pose.position.x)**2)**.5
+        target_range = ((self.sawyer.target_pose.pose.position.z)**2 + (self.sawyer.target_pose.pose.position.x)**2)**.5
 
         # Calulate the percent change in the distance
         drange_target = (default_range - target_range) / (default_range)
@@ -189,8 +215,8 @@ class ServClient(object):
         # data.pose.position.y = 1.8288
 
         # Get Range and heading from target to the bag
-        x_diff_throw = data.pose.position.x - self.sawyer.target_pose.pose.position.x
-        y_diff_throw = data.pose.position.y - self.sawyer.target_pose.pose.position.y
+        x_diff_throw = data.pose.position.z - self.sawyer.target_pose.pose.position.z
+        y_diff_throw = data.pose.position.x - self.sawyer.target_pose.pose.position.x
 
         distance_from_target = ((x_diff_throw)**2 + (y_diff_throw)**2)**.5
         angle_from_target = np.arctan2(y_diff_throw, x_diff_throw)
@@ -203,8 +229,8 @@ class ServClient(object):
         # Check for overshoot and undershoot
         # If the distance is greater than 1ft. and the bag is in quadrent 2 or 4
         # Then change the velocity respectively.
-        if distance_from_target > 0.3:
-            if angle_from_target > 0 and angle_from_target < np.pi/2:
+        if distance_from_target > 0.6:
+            if angle_from_target > -np.pi/2 and angle_from_target < 0:
                 needs_adjusting = 1
                 self.sawyer.overhand_throw_speed -= .1
 
@@ -218,11 +244,11 @@ class ServClient(object):
                     rospy.loginfo("Overshoot Detected -- Decreasing throwing speed")
 
 
-            elif angle_from_target < -np.pi/2 and angle_from_target > -np.pi:
+            elif angle_from_target < np.pi and angle_from_target > np.pi/2:
                 needs_adjusting = 1
                 self.sawyer.overhand_throw_speed += .1
 
-                display_png('angry.png', self.color)
+                display_png('sad.png', self.color)
 
                 # Check for a maximum speed setting
                 if self.sawyer.overhand_throw_speed > 1:
@@ -235,17 +261,18 @@ class ServClient(object):
         # If the distance from the target is greater than 6in. and the bag is in
         # quadrent 1 or 3,
         # Then change the targeting angle
-        if distance_from_target > 0.15:
-            if (angle_from_target > -np.pi/2 and angle_from_target < 0) or (angle_from_target > np.pi/2 and angle_from_target < np.pi):
+        if distance_from_target > 0.6:
+            if (angle_from_target > -np.pi and angle_from_target < -np.pi/2) or (angle_from_target > 0 and angle_from_target < np.pi/2):
                 needs_adjusting = 1
                 rospy.loginfo("Heading too far off -- Updating Throwing Angle")
 
-                target_heading = np.arctan2(self.sawyer.target_pose.pose.position.y, self.sawyer.target_pose.pose.position.x)
-                bag_heading = np.arctan2(data.pose.position.y, data.pose.position.x)
+                target_heading = np.arctan2(self.sawyer.target_pose.pose.position.x, self.sawyer.target_pose.pose.position.z)
+                bag_heading = np.arctan2(data.pose.position.x, data.pose.position.z)
 
                 dtheta_adjust =  bag_heading - target_heading
 
                 self.sawyer.overhand_target_angle += dtheta_adjust
+                display_png('sad.png', self.color)
 
         if needs_adjusting == 0:
             display_png('happy.png', self.color)
