@@ -52,7 +52,7 @@
 <div class="viewcode-block" id="switch_camera"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.switch_camera">[docs]</a><span class="k">def</span> <span class="nf">switch_camera</span><span class="p">(</span><span class="n">cam</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change active camera feed on Sawyer</span>
-<span class="sd">    args- cam (arm, head)</span>
+<span class="sd">    :param cam:  (string) camera to activate (head, arm)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">cam</span> <span class="o">==</span> <span class="s1">&#39;head&#39;</span><span class="p">:</span>
@@ -65,14 +65,13 @@
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid Argument. Cam must be &#39;arm&#39; or &#39;head&#39;&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="camera_command_client"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.camera_command_client">[docs]</a><span class="k">def</span> <span class="nf">camera_command_client</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_camera_command_client</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    based on https://www.aransena.com/blog/2018/1/11/rethink-robotics-sawyer-camera-access</span>
 <span class="sd">    client to process Sawyer camera commands</span>
-<span class="sd">    :param camera:</span>
-<span class="sd">    :param status:</span>
-<span class="sd">    :param timeout:</span>
-<span class="sd">    :return:</span>
+<span class="sd">    :param camera:  (string) camera name</span>
+<span class="sd">    :param status:  (Bool) Enable/disable</span>
+<span class="sd">    :param timeout:  (float) timeout</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="s1">&#39;/io/internal_camera/&#39;</span> <span class="o">+</span> <span class="n">camera</span> <span class="o">+</span> <span class="s1">&#39;/command&#39;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -88,14 +87,13 @@
         <span class="n">resp</span> <span class="o">=</span> <span class="n">cam_control</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
         <span class="nb">print</span> <span class="n">resp</span>
     <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="put_text"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.put_text">[docs]</a><span class="k">def</span> <span class="nf">put_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">bg_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="n">text_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write text to Sawyer&#39;s display screen</span>
 
-<span class="sd">    get emojis here: https://emojiisland.com/pages/free-download-emoji-icons-png</span>
 
 <span class="sd">    :param text:  string- test to displya</span>
 <span class="sd">    :param bg_color:  (b,g,r)- background color</span>
@@ -129,7 +127,12 @@
 
 <div class="viewcode-block" id="display_png"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.display_png">[docs]</a><span class="k">def</span> <span class="nf">display_png</span><span class="p">(</span><span class="n">img_name</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Displays a png image from imagaes/display directory on Sawyer&#39;s screen.</span>
+<span class="sd">    Displays a png image from imagaes/display directory on Sawyer&#39;s screen. Cannot handle images larger than</span>
+<span class="sd">    1024 x 600.</span>
+<span class="sd">    Good emojis here: https://emojiisland.com/pages/free-download-emoji-icons-png</span>
+<span class="sd">    :param img_name:  (string) - name of image to display</span>
+<span class="sd">    :param bg_color:  (b, g, r) color to make background</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">disp</span> <span class="o">=</span> <span class="n">intera_interface</span><span class="o">.</span><span class="n">HeadDisplay</span><span class="p">()</span>
 

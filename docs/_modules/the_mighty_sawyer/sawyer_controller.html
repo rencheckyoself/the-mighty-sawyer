@@ -165,15 +165,6 @@
                       <span class="s1">&#39;right_j5&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.46358984375</span><span class="p">,</span>
                       <span class="s1">&#39;right_j6&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.437654296875</span><span class="p">}</span>
 
-        <span class="c1"># # OG Home Position</span>
-        <span class="c1"># joint_goal = {&#39;right_j0&#39;:0.003546875,</span>
-        <span class="c1">#               &#39;right_j1&#39;:-0.5124091796875,</span>
-        <span class="c1">#               &#39;right_j2&#39;:0.0377041015625,</span>
-        <span class="c1">#               &#39;right_j3&#39;:1.8277978515625,</span>
-        <span class="c1">#               &#39;right_j4&#39;:-0.048537109375,</span>
-        <span class="c1">#               &#39;right_j5&#39;:-2.8403095703125,</span>
-        <span class="c1">#               &#39;right_j6&#39;:-1.39}</span>
-
         <span class="c1"># Set motion speed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">limb</span><span class="o">.</span><span class="n">set_joint_position_speed</span><span class="p">(</span><span class="n">speed</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 
@@ -287,14 +278,6 @@
                       <span class="s1">&#39;right_j4&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.60975390625</span><span class="p">,</span>
                       <span class="s1">&#39;right_j5&#39;</span><span class="p">:</span><span class="mf">2.5</span><span class="p">}</span>
 
-        <span class="c1"># Position that is not fully drawn back</span>
-        <span class="c1"># joint_goal = {&#39;right_j0&#39;:-1.5,</span>
-        <span class="c1">#               &#39;right_j1&#39;:0.0190947265625,</span>
-        <span class="c1">#               &#39;right_j2&#39;:cur_joint_angles[self.joint_names[2]],</span>
-        <span class="c1">#               &#39;right_j3&#39;:1.5639794921875,</span>
-        <span class="c1">#               &#39;right_j4&#39;:-1.60975390625,</span>
-        <span class="c1">#               &#39;right_j5&#39;:1}</span>
-
         <span class="c1"># Actuate arm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">limb</span><span class="o">.</span><span class="n">set_joint_position_speed</span><span class="p">(</span><span class="n">speed</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">limb</span><span class="o">.</span><span class="n">move_to_joint_positions</span><span class="p">(</span><span class="n">joint_goal</span><span class="p">)</span>
@@ -303,9 +286,6 @@
 
         <span class="c1"># Second motion joint position values</span>
         <span class="n">joint_goal</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;right_j2&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.5</span><span class="p">}</span>
-
-        <span class="c1"># Position that is not fully drawn back</span>
-        <span class="c1"># joint_goal = {&#39;right_j2&#39;:-.5}</span>
 
         <span class="c1"># Actuate Arm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">limb</span><span class="o">.</span><span class="n">set_joint_position_speed</span><span class="p">(</span><span class="n">speed</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
@@ -341,8 +321,8 @@
 
             <span class="c1"># Check if joint has passed the release threshold</span>
             <span class="k">if</span> <span class="n">cur_joint_angles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">underhand_release_angle</span> <span class="ow">and</span> <span class="n">release</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">OpenGripper</span><span class="p">()</span>
-                    <span class="n">release</span> <span class="o">=</span> <span class="mi">1</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">OpenGripper</span><span class="p">()</span>
+                <span class="n">release</span> <span class="o">=</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="MoveArm.do_over_hand_toss"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.sawyer_controller.MoveArm.do_over_hand_toss">[docs]</a>    <span class="k">def</span> <span class="nf">do_over_hand_toss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">release_angle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throwing_speed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_angle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -439,9 +419,9 @@
 
             <span class="c1"># Check if joint has passed the release threshold</span>
             <span class="k">if</span> <span class="n">cur_joint_angles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">1.3</span> <span class="ow">and</span> <span class="n">release</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Open Grippers&quot;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">OpenGripper</span><span class="p">()</span>
-                    <span class="n">release</span> <span class="o">=</span> <span class="mi">1</span></div></div>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Open Grippers&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">OpenGripper</span><span class="p">()</span>
+                <span class="n">release</span> <span class="o">=</span> <span class="mi">1</span></div></div>
 </pre></div>
 
           </div>

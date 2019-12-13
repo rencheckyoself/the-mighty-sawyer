@@ -16,7 +16,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="The Mighty Sawyer" href="README.html" />
+    <link rel="prev" title="The Mighty Sawyer" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -195,27 +195,19 @@ directly after the underhand throw start position.</p>
 <span id="image-library"></span><h1>Image Library<a class="headerlink" href="#module-the_mighty_sawyer.imagelib" title="Permalink to this headline">¶</a></h1>
 <p>Provides functions for visual aspects of project (cameras, display images, etc).</p>
 <dl class="function">
-<dt id="the_mighty_sawyer.imagelib.camera_command_client">
-<code class="descclassname">the_mighty_sawyer.imagelib.</code><code class="descname">camera_command_client</code><span class="sig-paren">(</span><em>camera</em>, <em>status</em>, <em>timeout=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/the_mighty_sawyer/imagelib.html#camera_command_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#the_mighty_sawyer.imagelib.camera_command_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>based on <a class="reference external" href="https://www.aransena.com/blog/2018/1/11/rethink-robotics-sawyer-camera-access">https://www.aransena.com/blog/2018/1/11/rethink-robotics-sawyer-camera-access</a>
-client to process Sawyer camera commands
-:param camera:
-:param status:
-:param timeout:
-:return:</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="the_mighty_sawyer.imagelib.display_png">
 <code class="descclassname">the_mighty_sawyer.imagelib.</code><code class="descname">display_png</code><span class="sig-paren">(</span><em>img_name</em>, <em>bg_color=(255</em>, <em>255</em>, <em>255)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/the_mighty_sawyer/imagelib.html#display_png"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#the_mighty_sawyer.imagelib.display_png" title="Permalink to this definition">¶</a></dt>
-<dd><p>Displays a png image from imagaes/display directory on Sawyer’s screen.</p>
+<dd><p>Displays a png image from imagaes/display directory on Sawyer’s screen. Cannot handle images larger than
+1024 x 600.
+Good emojis here: <a class="reference external" href="https://emojiisland.com/pages/free-download-emoji-icons-png">https://emojiisland.com/pages/free-download-emoji-icons-png</a>
+:param img_name:  (string) - name of image to display
+:param bg_color:  (b, g, r) color to make background</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="the_mighty_sawyer.imagelib.put_text">
 <code class="descclassname">the_mighty_sawyer.imagelib.</code><code class="descname">put_text</code><span class="sig-paren">(</span><em>text</em>, <em>bg_color=(255</em>, <em>255</em>, <em>255)</em>, <em>text_color=(0</em>, <em>0</em>, <em>0)</em>, <em>scale=3</em>, <em>thickness=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/the_mighty_sawyer/imagelib.html#put_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#the_mighty_sawyer.imagelib.put_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write text to Sawyer’s display screen</p>
-<p>get emojis here: <a class="reference external" href="https://emojiisland.com/pages/free-download-emoji-icons-png">https://emojiisland.com/pages/free-download-emoji-icons-png</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -246,7 +238,29 @@ client to process Sawyer camera commands
 <dt id="the_mighty_sawyer.imagelib.switch_camera">
 <code class="descclassname">the_mighty_sawyer.imagelib.</code><code class="descname">switch_camera</code><span class="sig-paren">(</span><em>cam</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/the_mighty_sawyer/imagelib.html#switch_camera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#the_mighty_sawyer.imagelib.switch_camera" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change active camera feed on Sawyer
-args- cam (arm, head)</p>
+:param cam:  (string) camera to activate (head, arm)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-the_mighty_sawyer.tms_helper_functions">
+<span id="helper-functions"></span><h1>Helper Functions<a class="headerlink" href="#module-the_mighty_sawyer.tms_helper_functions" title="Permalink to this headline">¶</a></h1>
+<p>General Helper Functions</p>
+<dl class="function">
+<dt id="the_mighty_sawyer.tms_helper_functions.find_true">
+<code class="descclassname">the_mighty_sawyer.tms_helper_functions.</code><code class="descname">find_true</code><span class="sig-paren">(</span><em>alist</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/the_mighty_sawyer/tms_helper_functions.html#find_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#the_mighty_sawyer.tms_helper_functions.find_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the indices in a list where they are Trues</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="the_mighty_sawyer.tms_helper_functions.get_dist">
+<code class="descclassname">the_mighty_sawyer.tms_helper_functions.</code><code class="descname">get_dist</code><span class="sig-paren">(</span><em>pose1</em>, <em>pose2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/the_mighty_sawyer/tms_helper_functions.html#get_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#the_mighty_sawyer.tms_helper_functions.get_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Euclidean distance between two poses.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="the_mighty_sawyer.tms_helper_functions.get_params_from_yaml">
+<code class="descclassname">the_mighty_sawyer.tms_helper_functions.</code><code class="descname">get_params_from_yaml</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/the_mighty_sawyer/tms_helper_functions.html#get_params_from_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#the_mighty_sawyer.tms_helper_functions.get_params_from_yaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens yaml file (from the relative path) and returns the data</p>
 </dd></dl>
 
 </div>
@@ -261,7 +275,7 @@ args- cam (arm, head)</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="README.html" title="previous chapter">The Mighty Sawyer</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">The Mighty Sawyer</a></li>
   </ul></li>
 </ul>
 </div>

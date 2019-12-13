@@ -73,12 +73,9 @@ In addition, the team developed a [simple state machine](#simple-state-machine) 
 │       ├── sawyer_controller.py - library to move the arm
 │       └── tms_helper_functions.py - general purpose helper functions
 └── srv
-    ├── EvaluateThrowResult.srv
-    ├── ExecuteThrow.srv
     ├── GrabBag.srv
-    ├── MoveToThrowPos.srv
-    ├── TagPose.srv
-    └── WaitForBag.srv
+    ├── SetTeam.srv
+    └── TagPose.srv
 
 ```
 
@@ -100,18 +97,20 @@ source devel/setup.bash
 roslaunch the_mighty_sawyer play_cornhole.launch
 ```
 
-Note: Will need to take images of your own bean bags in order for the visual detection to work properly. Also will need to generate and add your own april tags.
+Note: Will need to take images of your own bean bags in order for the visual detection to work.
 
 # Computer Vision
-In order to keep track of the cornhole board and bags positioned across the board, april tags are used as a means of identifying and extracting information of the board or bag's pose relative to the head camera. All april tags are part of the same tag family, 36h11, and each tag within this family is unique to allow Sawyer to distinguish tags between the board and all the different bags. These pose positions are used to assist in throwing and keeping track of score. Furthermore, detection of tags is designed in such a way that Sawyer will remember the last detected position of the tag if the tag is unable to be detected again.
+In order to keep track of the cornhole board and bags positioned across the board, april tags are used as a means of identifying and extracting information of the board or bag's pose relative to the head camera. All april tags used are part of the same tag family, 36h11, and each tag within this family is unique to allow Sawyer to distinguish tags between the board and all the different bags. These pose positions are used to assist in throwing and keeping track of score. Furthermore, detection of tags is designed in such a way that Sawyer will remember the last detected position of the tag if the tag is unable to be detected again.
+
+`find_object_2d` was used to recognize beanbags without using april tags when handing a bag to Sawyer. A few images of each bag type are stored and features are extracted from these images. Each frame published from the camera is scanned looking for rigid transforms of the stored feature maps. When a match is recognized, Sawyer will accept or reject the bag based on the team it has been assigned. Reference images can be found in the images/vision folder.
 
 # Throwing
-Since Sawyer is not the fastest robot, the throwing motion attempts to leverage as many joints as possible while also taking advantage of the full arm length. TMS executes an overhand throw, by positioning the arm behind it self. It then actuates joints 1, 3, and 5 to maximize velocity in the direction of the throw. During the trajectory, the grippers will open near the peak, releasing the bag. **Be sure that Sawyer's arm can be fully extended in all directions without hitting anything in the environment before running.**
+Since TMS is not the fastest robot, the throwing motion attempts to leverage as many joints as possible while also taking advantage of the full arm length. TMS executes an overhand throw, by positioning the arm behind it self. It then actuates joints 1, 3, and 5 to maximize velocity in the direction of the throw. During the trajectory, the grippers will open near the peak, releasing the bag. **Be sure that Sawyer's arm can be fully extended in all directions without hitting anything in the environment before running.**
 
 TMS will also attempt to target the cornhole board and it will also make adjustments based on the result of each throw by referencing the respective April tags. These features are both accomplished using the distance and heading calculations between sawyer, the board, and the most recently thrown bag.
 
 # Manipulation
-During various throwing tests, sawyer had about a 90% success rate, the other 10% had the bag slip out of Sawyer's grippers before it reached the peak of its throw. Also as the throwing motion slowed down to target a board position closer to itself, the bag would tend to fall out the back of the gripper.
+During various throwing tests, Sawyer had about a 90% success rate, the other 10% had the bag slip out of Sawyer's grippers before it reached the peak of its throw. Also as the throwing motion slowed down to target a board position closer to itself, the bag would tend to fall out the back of the gripper.
 
 To solve this the group, added a glove attached to the grippers. Basically, it is a pouch to support the bag as the arm starts to throw. Then when the grippers release at the top of the throw, the glove ensures the bag is thrown forward.
 
@@ -164,10 +163,9 @@ TMS's high-level states are tracked within `sawyer_main_client` in the `nodes` f
  - Also we would like to try to remove the dependency on AprilTags. This may prove to be too difficult for the bag detection with Sawyer's built in cameras, but the board should be possible.
 
 # Media
-Photos here.
-
-# References
-[Sphinx API](https://rencheckyoself.github.io/the-mighty-sawyer/)
 [Final Video on YouTube](https://www.youtube.com/watch?v=GHv42RLQk-g&t=5s)
 [Bag Handoff Demo](https://youtu.be/lZPUK0xGsRU)
 [Targeting Demo](https://youtu.be/ffp8pguVMzQ)
+
+# References
+[Sphinx API](https://rencheckyoself.github.io/the-mighty-sawyer/)
