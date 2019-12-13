@@ -140,8 +140,8 @@ It is also able to respond to a human player moving the board mid game. If TMS d
 
 ```
 [0: Initialization] -->  [1: Grab]  -->  [2: Throw]  -->  [3: Update]
-				^									 |	
-				|-----------------------------------| 
+			  ^									 |	
+			  |-----------------------------------| 
 ```
 TMS's high-level states are tracked within `sawyer_main_client` in the `nodes` folder.  Each main component of our project (e.g., robot motions) offer a suite of Services; these are then used in `sawyer_main_client` accordingly depending on the state of the cornhole game.  `sawyer_main_client` does not necessarily have access to all Services offered by the lower-level components, only those needed at the highest level to navigate through a game.  For instance, `actuate_gripper` Service is a low-level Service offered in `sawyer_movement_server` used for `grab_bag`.  Using only the necessary Services to play the game, TMS is able to transition between them until the game is over.  Though ROS Action Servers and SMACHs were considered as ways to implement TMS's state machine for this project, we viewed its complete state machine to be too simple.  
 
