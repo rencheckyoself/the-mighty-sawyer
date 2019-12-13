@@ -4,11 +4,10 @@
 This node moves the sawyer arm from the area to recieve the bean bag to the
 start of the throwing trajectory
 
-PUBLISHES To:
+Note: this was not used in the final demonstration; thus, this was not fully developed.
 
-SUBSCIBED To:
-
-CLIENTS:
+PUBLISHERS:
+    /move_group/display_planned_path
 
 """
 
@@ -26,7 +25,7 @@ from std_msgs.msg import String
 
 from moveit_commander.conversions import pose_to_list
 
-class MoveArm(object):
+class MoveArmMoveIt(object):
 
     def __init__(self):
 
@@ -149,7 +148,7 @@ class MoveArm(object):
 
 def main():
 
-    testing = MoveArm()
+    testing = MoveArmMoveIt()
 
     testing.go_to_recieving_pos()
 

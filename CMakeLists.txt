@@ -82,7 +82,6 @@ add_service_files(
   ExecuteThrow.srv
   GetPose.srv
   GrabBag.srv
-  GrabBag2.srv
   MoveToThrowPos.srv
   SawyerStates.srv
   TagPose.srv
@@ -227,22 +226,15 @@ include_directories(
 install(PROGRAMS
   nodes/apriltag_pose
   nodes/camera_converter
-  nodes/dummy_node1
   nodes/grab_bag_server
-  nodes/sawyer_main_client.py
+  nodes/sawyer_main_client
   nodes/sawyer_movement_server
-  nodes/sawyer_states
   nodes/traj_with_moveit
   nodes/traj_with_sawyer
-  scripts/beanbag_handoff
   scripts/display_png.py
-  scripts/pub_locate_board
   scripts/set_exposure.py
-  scripts/sub_locate_board
   scripts/switch_camera.py
   scripts/test_movement_server.py
-  scripts/throwing_beanbag
-  src/${PROJECT_NAME}/imagelib.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

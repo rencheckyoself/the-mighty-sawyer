@@ -8,6 +8,9 @@ SERVICES:
     /start_up: enable the robot and calibrate the grippers
     /go_to_home_pos: send the robot to a preset home position
     /overhand_throw: executes an overhand
+    /actuate_gripper: actuates gripper to open/close positions
+    /target_board: targets the board
+    /make_adjustments: makes targeting/throwing adjustments
 """
 
 from __future__ import division
@@ -15,7 +18,7 @@ import numpy as np
 import rospy
 
 from the_mighty_sawyer import MoveArm
-from the_mighty_sawyer.imagelib import display_png, put_text
+from the_mighty_sawyer import display_png, put_text
 
 from std_srvs.srv import Empty, EmptyResponse, SetBool, SetBoolResponse, Trigger, TriggerRequest, TriggerResponse
 from the_mighty_sawyer.srv import GetPose, GetPoseResponse
@@ -24,7 +27,9 @@ from geometry_msgs.msg import Pose
 
 
 class ServClient(object):
-
+    """
+    A class with a suite of movement-related Services.
+    """
     def __init__(self):
 
         self.sawyer = MoveArm()

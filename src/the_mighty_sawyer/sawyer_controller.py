@@ -17,11 +17,11 @@ from geometry_msgs.msg import Pose
 from std_msgs.msg import String
 
 class MoveArm(object):
-
+    """
+    Class containing methods to fully interact with the sawyer arm.
+    """
     def __init__(self):
-        """
-        Class containing methods to fully interact with the sawyer arm.
-        """
+        
 
         self.rs = intera_interface.RobotEnable(CHECK_VERSION)
 
@@ -49,11 +49,17 @@ class MoveArm(object):
         self.overhand_throw_offset = 0
 
     def initializaton(self):
+        """
+        Higher-level function that performs Sawyer-related initializations.
+        """
         self.EnableRobot()
         rospy.sleep(.5)
         self.InitializeGripper()
 
     def EnableRobot(self):
+        """
+        Enables the Sawyer robot.
+        """
         self.rs.enable()
 
     def reset_default_settings(self):

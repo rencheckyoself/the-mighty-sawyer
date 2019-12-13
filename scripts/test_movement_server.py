@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-This file acts as a unit test for the sawyer movement server services. This
+This file acts as a "unit test" for the sawyer movement server services. This
 should perform a generic overhand throw.
 """
 

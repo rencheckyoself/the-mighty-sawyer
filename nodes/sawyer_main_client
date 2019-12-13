@@ -34,7 +34,7 @@ from the_mighty_sawyer.srv import (
 
 def tms_initialization():
 	"""
-	Higher-level function that initializes The Mighty Sawyer
+	Higher-level function that initializes The Mighty Sawyer with various Services
 	"""
 	print("Initializing...")
 	start_up_client()
@@ -162,26 +162,6 @@ def clear_board_client():
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
-####################################################
-# 	SERVICES :: score_keeping_server???
-####################################################
-
-# def evaluate_throw_result_client(srv_name):
-# 	"""
-# 	This is the client for the Service 'evaluate_throw_result' provided by 
-# 	"""
-# 	rospy.wait_for_service(srv_name)
-# 	try:
-# 		_srv_evaluate_throw_result = rospy.ServiceProxy(
-# 										srv_name, 
-# 										EvaluateThrowResult)
-# 		print("I am going to evaluate my throw...")
-# 		_srv_evaluate_throw_result()
-# 		rospy.sleep(1)
-# 		return _srv_evaluate_throw_result
-# 	except rospy.ServiceException, e:
-# 		print "Service call failed: %s"%e
-
 
 def sawyer_main_client():
 	"""
@@ -195,7 +175,6 @@ def sawyer_main_client():
 	_srv_names = [
 						'grab_bag',
 						'overhand_throw',
-						# 'evaluate_throw_result',
 						'make_adjustments']
 
 	num_of_states = len(_srv_names)
