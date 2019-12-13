@@ -1,0 +1,386 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>sawyer_main_client &#8212; The Mighty Sawyer 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sawyer_main_client</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot; This client node is the main node to track Sawyer&#39;s states during cornhole games.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">geometry_msgs.msg</span> <span class="kn">import</span> <span class="p">(</span>
+	<span class="n">Pose</span><span class="p">,</span>
+	<span class="n">PoseWithCovariance</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">std_srvs.srv</span> <span class="kn">import</span> <span class="p">(</span>
+	<span class="n">Empty</span><span class="p">,</span>
+	<span class="n">EmptyResponse</span><span class="p">,</span>
+	<span class="n">SetBool</span><span class="p">,</span>
+	<span class="n">SetBoolResponse</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">the_mighty_sawyer</span> <span class="kn">import</span> <span class="p">(</span>
+	<span class="n">find_true</span><span class="p">,</span>
+	<span class="n">get_params_from_yaml</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">the_mighty_sawyer</span> <span class="kn">import</span> <span class="p">(</span>
+	<span class="n">MoveArm</span><span class="p">)</span>
+
+<span class="c1"># from the_mighty_sawyer.srv import (</span>
+<span class="c1"># 	GetPose)</span>
+
+<span class="c1"># from the_mighty_sawyer.srv import (</span>
+<span class="c1"># 	WaitForBag,</span>
+<span class="c1"># 	GrabBag2,</span>
+<span class="c1"># 	MoveToThrowPos,</span>
+<span class="c1"># 	ExecuteThrow,</span>
+<span class="c1"># 	EvaluateThrowResult,</span>
+<span class="c1"># 	WaitForBagResponse,</span>
+<span class="c1"># 	GrabBag2Response,</span>
+<span class="c1"># 	MoveToThrowPosResponse,</span>
+<span class="c1"># 	ExecuteThrowResponse,</span>
+<span class="c1"># 	EvaluateThrowResultResponse)</span>
+
+
+<span class="c1">####################################################</span>
+<span class="c1"># 	SERVICES :: sawyer_movement_server</span>
+<span class="c1">####################################################</span>
+
+<div class="viewcode-block" id="tms_initialization"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.tms_initialization">[docs]</a><span class="k">def</span> <span class="nf">tms_initialization</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Higher-level function that initializes The Mighty Sawyer</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initializing...&quot;</span><span class="p">)</span>
+	<span class="n">start_up_client</span><span class="p">()</span>
+	<span class="n">go_to_home_pos_client</span><span class="p">()</span>
+	<span class="n">make_adjustments_client</span><span class="p">(</span><span class="s1">&#39;make_adjustments&#39;</span><span class="p">)</span>
+	<span class="n">clear_board_client</span><span class="p">()</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initialization complete.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="start_up_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.start_up_client">[docs]</a><span class="k">def</span> <span class="nf">start_up_client</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the client for the Service &#39;start_up&#39; provided by sawyer_movement_server</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">srv_name</span> <span class="o">=</span> <span class="s1">&#39;start_up&#39;</span>
+	<span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">_srv_start_up</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am performing initialization tasks...&quot;</span><span class="p">)</span>
+		<span class="n">_srv_start_up</span><span class="p">()</span>
+		<span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">_srv_start_up</span>
+
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="nb">print</span> <span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span></div>
+
+<div class="viewcode-block" id="go_to_home_pos_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.go_to_home_pos_client">[docs]</a><span class="k">def</span> <span class="nf">go_to_home_pos_client</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the client for the Service &#39;go_to_home_pos&#39; provided by sawyer_movement_server</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># if srv_name is not &#39;go_to_home_pos&#39;:</span>
+	<span class="c1"># 	pass</span>
+	<span class="n">srv_name</span> <span class="o">=</span> <span class="s1">&#39;go_to_home_pos&#39;</span>
+	<span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">_srv_go_to_home_pos</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am moving to my throwing position...&quot;</span><span class="p">)</span>
+		<span class="n">_srv_go_to_home_pos</span><span class="p">()</span>
+		<span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">_srv_go_to_home_pos</span>
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="nb">print</span> <span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span></div>
+
+<div class="viewcode-block" id="target_board_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.target_board_client">[docs]</a><span class="k">def</span> <span class="nf">target_board_client</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the client for the Service &#39;target_board&#39; provided by sawyer_movement_server</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="n">srv_name</span> <span class="o">=</span> <span class="s1">&#39;target_board&#39;</span>
+	<span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">_srv_target_board</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am going to attempt to target the cornhole board...&quot;</span><span class="p">)</span>
+		<span class="n">_srv_target_board</span><span class="p">()</span>
+		<span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">_srv_target_board</span>
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="nb">print</span> <span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span></div>
+
+<div class="viewcode-block" id="overhand_throw_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.overhand_throw_client">[docs]</a><span class="k">def</span> <span class="nf">overhand_throw_client</span><span class="p">(</span><span class="n">srv_name</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the client for the Service &#39;overhand_throw&#39; provided by sawyer_movement_server</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">srv_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;overhand_throw&#39;</span><span class="p">:</span>
+		<span class="k">pass</span>
+
+	<span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">_srv_overhand_throw</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am going to attempt to throw the beanbag...&quot;</span><span class="p">)</span>
+		<span class="n">_srv_overhand_throw</span><span class="p">()</span>
+		<span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">_srv_overhand_throw</span>
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="nb">print</span> <span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span></div>
+
+<div class="viewcode-block" id="make_adjustments_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.make_adjustments_client">[docs]</a><span class="k">def</span> <span class="nf">make_adjustments_client</span><span class="p">(</span><span class="n">srv_name</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the client for the Service &#39;make_adjustments&#39; provided by sawyer_movement_server</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">srv_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;make_adjustments&#39;</span><span class="p">:</span>
+		<span class="k">pass</span>
+
+	<span class="c1"># _sub_pose = rospy.Subcriber(&#39;/pose_april_tags&#39;, PoseWithCovariance, pose_callback)</span>
+
+	<span class="c1"># _pose_board = Pose()</span>
+	<span class="c1"># _pose_bag = Pose()</span>
+
+	<span class="n">go_to_home_pos_client</span><span class="p">()</span>
+
+	<span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">_srv_make_adjustments</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am going to attempt to throw the beanbag...&quot;</span><span class="p">)</span>
+		<span class="n">_srv_make_adjustments</span><span class="p">()</span>
+		<span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">_srv_make_adjustments</span>
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="nb">print</span> <span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span></div>
+
+
+	<span class="c1"># def pose_callback():</span>
+	<span class="c1"># 	pass</span>
+
+
+<span class="c1">####################################################</span>
+<span class="c1"># 	SERVICES :: grab_bag_server</span>
+<span class="c1">####################################################</span>
+
+<div class="viewcode-block" id="grab_bag_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.grab_bag_client">[docs]</a><span class="k">def</span> <span class="nf">grab_bag_client</span><span class="p">(</span><span class="n">srv_name</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the client for the Service &#39;grab_bag&#39; provided by grab_bag_server</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">srv_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;grab_bag&#39;</span><span class="p">:</span>
+		<span class="k">pass</span>
+
+	<span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">_srv_grab_bag</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am attempting to grab the beanbag...&quot;</span><span class="p">)</span>
+		<span class="n">_srv_grab_bag</span><span class="p">()</span>
+		<span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">_srv_grab_bag</span>
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="nb">print</span> <span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span></div>
+
+<div class="viewcode-block" id="clear_board_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.clear_board_client">[docs]</a><span class="k">def</span> <span class="nf">clear_board_client</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the client for the Service &#39;clear_board&#39; provided by grab_bag_server</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># if srv_name is not &#39;make_adjustments&#39;:</span>
+	<span class="c1"># 	pass</span>
+
+	<span class="n">srv_name</span> <span class="o">=</span> <span class="s1">&#39;clear_board&#39;</span>
+	<span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">_srv_clear_board</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am clearing the board...&quot;</span><span class="p">)</span>
+		<span class="n">_srv_clear_board</span><span class="p">()</span>
+		<span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">_srv_clear_board</span>
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+		<span class="nb">print</span> <span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span></div>
+
+<span class="c1">####################################################</span>
+<span class="c1"># 	SERVICES :: score_keeping_server???</span>
+<span class="c1">####################################################</span>
+
+<span class="c1"># def evaluate_throw_result_client(srv_name):</span>
+<span class="c1"># 	&quot;&quot;&quot;</span>
+<span class="c1"># 	This is the client for the Service &#39;evaluate_throw_result&#39; provided by</span>
+<span class="c1"># 	&quot;&quot;&quot;</span>
+<span class="c1"># 	rospy.wait_for_service(srv_name)</span>
+<span class="c1"># 	try:</span>
+<span class="c1"># 		_srv_evaluate_throw_result = rospy.ServiceProxy(</span>
+<span class="c1"># 										srv_name,</span>
+<span class="c1"># 										EvaluateThrowResult)</span>
+<span class="c1"># 		print(&quot;I am going to evaluate my throw...&quot;)</span>
+<span class="c1"># 		_srv_evaluate_throw_result()</span>
+<span class="c1"># 		rospy.sleep(1)</span>
+<span class="c1"># 		return _srv_evaluate_throw_result</span>
+<span class="c1"># 	except rospy.ServiceException, e:</span>
+<span class="c1"># 		print &quot;Service call failed: %s&quot;%e</span>
+
+
+<div class="viewcode-block" id="sawyer_main_client"><a class="viewcode-back" href="../nodes.html#sawyer_main_client.sawyer_main_client">[docs]</a><span class="k">def</span> <span class="nf">sawyer_main_client</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This is the sawyer&#39;s main Service client that governs all of sawyer&#39;s Services</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="c1">#== initialization</span>
+	<span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s2">&quot;sawyer_main_client&quot;</span><span class="p">)</span>
+
+	<span class="c1">#-- preserve this order until we use something like dictionaries</span>
+	<span class="n">_srv_names</span> <span class="o">=</span> <span class="p">[</span>
+						<span class="s1">&#39;grab_bag&#39;</span><span class="p">,</span>
+						<span class="s1">&#39;overhand_throw&#39;</span><span class="p">,</span>
+						<span class="c1"># &#39;evaluate_throw_result&#39;,</span>
+						<span class="s1">&#39;make_adjustments&#39;</span><span class="p">]</span>
+
+	<span class="n">num_of_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_srv_names</span><span class="p">)</span>
+	<span class="n">state_idx</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">sawyer_state</span> <span class="o">=</span> <span class="n">_srv_names</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span>
+	<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="n">tms_initialization</span><span class="p">()</span>
+
+	<span class="c1">#== main game loop</span>
+	<span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The current state is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sawyer_state</span><span class="p">))</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;state_idx: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state_idx</span><span class="p">))</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">sawyer_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_srv_names</span><span class="p">):</span>
+			<span class="n">state_idx</span> <span class="o">=</span> <span class="mi">0</span>
+			<span class="n">sawyer_state</span> <span class="o">=</span> <span class="n">_srv_names</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span>
+			<span class="n">tms_initialization</span><span class="p">()</span>
+		<span class="k">elif</span> <span class="p">(</span><span class="n">sawyer_state</span> <span class="ow">is</span> <span class="s1">&#39;grab_bag&#39;</span><span class="p">):</span>
+			<span class="n">grab_bag_client</span><span class="p">(</span><span class="n">sawyer_state</span><span class="p">)</span>
+			<span class="c1"># update_state()</span>
+			<span class="n">state_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">state_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_of_states</span>
+			<span class="n">sawyer_state</span> <span class="o">=</span> <span class="n">_srv_names</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am now ready to transition to state: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sawyer_state</span><span class="p">))</span>
+
+		<span class="c1"># elif (sawyer_state is &#39;target_board&#39;):</span>
+		<span class="c1"># 	target_board_client(sawyer_state)</span>
+		<span class="c1"># 	# update_state()</span>
+		<span class="c1"># 	state_idx = (state_idx + 1) % num_of_states</span>
+		<span class="c1"># 	sawyer_state = _srv_names[state_idx]</span>
+		<span class="c1"># 	print(&quot;I am now ready to transition to state: &quot; + str(sawyer_state))</span>
+
+		<span class="c1"># elif (sawyer_state is &#39;go_to_home_pos&#39;):</span>
+		<span class="c1"># 	go_to_home_pos_client(sawyer_state)</span>
+		<span class="c1"># 	# update_state()</span>
+		<span class="c1"># 	state_idx = (state_idx + 1) % num_of_states</span>
+		<span class="c1"># 	sawyer_state = _srv_names[state_idx]</span>
+		<span class="c1"># 	print(&quot;I am now ready to transition to state: &quot; + str(sawyer_state))</span>
+
+		<span class="k">elif</span> <span class="p">(</span><span class="n">sawyer_state</span> <span class="ow">is</span> <span class="s1">&#39;overhand_throw&#39;</span><span class="p">):</span>
+			<span class="n">overhand_throw_client</span><span class="p">(</span><span class="n">sawyer_state</span><span class="p">)</span>
+			<span class="c1"># update_state()</span>
+			<span class="n">state_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">state_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_of_states</span>
+			<span class="n">sawyer_state</span> <span class="o">=</span> <span class="n">_srv_names</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am now ready to transition to state: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sawyer_state</span><span class="p">))</span>
+
+		<span class="c1"># elif (sawyer_state is &#39;evaluate_throw_result&#39;):</span>
+		<span class="c1"># 	evaluate_throw_result_client(sawyer_state)</span>
+		<span class="c1"># 	# state_idx, sawyer_state = update_state(state_idx, sawyer_state)</span>
+		<span class="c1"># 	state_idx = (state_idx + 1) % num_of_states</span>
+		<span class="c1"># 	sawyer_state = _srv_names[state_idx]</span>
+		<span class="c1"># 	print(&quot;I am now ready to transition to state: &quot; + str(sawyer_state))</span>
+
+		<span class="c1">#-- make_adjustments</span>
+		<span class="k">elif</span> <span class="p">(</span><span class="n">sawyer_state</span> <span class="ow">is</span> <span class="s1">&#39;make_adjustments&#39;</span><span class="p">):</span>
+			<span class="n">make_adjustments_client</span><span class="p">(</span><span class="n">sawyer_state</span><span class="p">)</span>
+			<span class="c1"># update_state()</span>
+			<span class="n">state_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">state_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_of_states</span>
+			<span class="n">sawyer_state</span> <span class="o">=</span> <span class="n">_srv_names</span><span class="p">[</span><span class="n">state_idx</span><span class="p">]</span>
+
+			<span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">count</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+				<span class="n">clear_board_client</span><span class="p">()</span>
+			<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I am now ready to transition to state: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sawyer_state</span><span class="p">))</span>
+
+
+		<span class="n">rate</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span></div>
+
+	<span class="c1"># def update_state():</span>
+	<span class="c1"># 	state_idx = (state_idx + 1) % num_of_states</span>
+	<span class="c1"># 	sawyer_state = _srv_names[state_idx]</span>
+	<span class="c1"># 	print(&quot;I am now ready to transition to state: &quot; + str(sawyer_state))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">sawyer_main_client</span><span class="p">()</span>
+	<span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ROSInterruptException</span><span class="p">:</span>
+		<span class="k">pass</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Mike Lee, Kevin Kleczka, Michael Rencheck, Shan Kahn.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

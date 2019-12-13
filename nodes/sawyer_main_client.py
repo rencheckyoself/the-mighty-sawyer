@@ -12,9 +12,9 @@ from geometry_msgs.msg import (
 	PoseWithCovariance)
 
 from std_srvs.srv import (
-	Empty, 
-	EmptyResponse, 
-	SetBool, 
+	Empty,
+	EmptyResponse,
+	SetBool,
 	SetBoolResponse)
 
 from the_mighty_sawyer import (
@@ -28,13 +28,13 @@ from the_mighty_sawyer.srv import (
 	GetPose)
 
 # from the_mighty_sawyer.srv import (
-# 	WaitForBag, 
-# 	GrabBag2, 
+# 	WaitForBag,
+# 	GrabBag2,
 # 	MoveToThrowPos,
 # 	ExecuteThrow,
 # 	EvaluateThrowResult,
-# 	WaitForBagResponse, 
-# 	GrabBag2Response, 
+# 	WaitForBagResponse,
+# 	GrabBag2Response,
 # 	MoveToThrowPosResponse,
 # 	ExecuteThrowResponse,
 # 	EvaluateThrowResultResponse)
@@ -92,7 +92,7 @@ def target_board_client():
 	"""
 	This is the client for the Service 'target_board' provided by sawyer_movement_server
 	"""
-	
+
 	srv_name = 'target_board'
 	rospy.wait_for_service(srv_name)
 	try:
@@ -195,12 +195,12 @@ def clear_board_client():
 
 # def evaluate_throw_result_client(srv_name):
 # 	"""
-# 	This is the client for the Service 'evaluate_throw_result' provided by 
+# 	This is the client for the Service 'evaluate_throw_result' provided by
 # 	"""
 # 	rospy.wait_for_service(srv_name)
 # 	try:
 # 		_srv_evaluate_throw_result = rospy.ServiceProxy(
-# 										srv_name, 
+# 										srv_name,
 # 										EvaluateThrowResult)
 # 		print("I am going to evaluate my throw...")
 # 		_srv_evaluate_throw_result()
@@ -231,7 +231,7 @@ def sawyer_main_client():
 	count = 0
 
 	tms_initialization()
-	
+
 	#== main game loop
 	rate = rospy.Rate(1)
 	while not rospy.is_shutdown():
@@ -254,7 +254,7 @@ def sawyer_main_client():
 		# 	state_idx = (state_idx + 1) % num_of_states
 		# 	sawyer_state = _srv_names[state_idx]
 		# 	print("I am now ready to transition to state: " + str(sawyer_state))
-		
+
 		# elif (sawyer_state is 'go_to_home_pos'):
 		# 	go_to_home_pos_client(sawyer_state)
 		# 	# update_state()
@@ -296,7 +296,7 @@ def sawyer_main_client():
 	# 	state_idx = (state_idx + 1) % num_of_states
 	# 	sawyer_state = _srv_names[state_idx]
 	# 	print("I am now ready to transition to state: " + str(sawyer_state))
-				
+
 
 if __name__ == '__main__':
 	try:

@@ -17,12 +17,10 @@ from geometry_msgs.msg import Pose
 from std_msgs.msg import String
 
 class MoveArm(object):
-
+    """
+    Class containing methods to fully interact with the sawyer arm.
+    """
     def __init__(self):
-        """
-        Class containing methods to fully interact with the sawyer arm.
-        """
-
         self.rs = intera_interface.RobotEnable(CHECK_VERSION)
 
         self.gripper = intera_interface.Gripper('right_gripper')
@@ -147,6 +145,7 @@ class MoveArm(object):
 
     def go_to_bag_pos(self, delay_time):
         """
+        DEPRICIATED
         Move the wrist area forward by 90deg. from the home position. Ideally,
         this is called when the robot is already located at the home position.
 

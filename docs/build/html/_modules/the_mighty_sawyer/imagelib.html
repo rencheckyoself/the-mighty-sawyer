@@ -1,0 +1,237 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>the_mighty_sawyer.imagelib &#8212; The Mighty Sawyer 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for the_mighty_sawyer.imagelib</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provides functions for visual aspects of project (cameras, display images, etc).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">intera_core_msgs.srv._IOComponentCommandSrv</span> <span class="kn">import</span> <span class="n">IOComponentCommandSrv</span>
+<span class="kn">from</span> <span class="nn">intera_core_msgs.msg._IOComponentCommand</span> <span class="kn">import</span> <span class="n">IOComponentCommand</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">intera_interface</span><span class="o">,</span> <span class="nn">intera_io</span>
+
+
+<div class="viewcode-block" id="switch_camera"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.switch_camera">[docs]</a><span class="k">def</span> <span class="nf">switch_camera</span><span class="p">(</span><span class="n">cam</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Change active camera feed on Sawyer</span>
+<span class="sd">    args- cam (arm, head)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">cam</span> <span class="o">==</span> <span class="s1">&#39;head&#39;</span><span class="p">:</span>
+        <span class="n">camera_command_client</span><span class="p">(</span><span class="n">camera</span><span class="o">=</span><span class="s1">&#39;right_hand_camera&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">camera_command_client</span><span class="p">(</span><span class="n">camera</span><span class="o">=</span><span class="s1">&#39;head_camera&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cam</span> <span class="o">==</span> <span class="s1">&#39;arm&#39;</span><span class="p">:</span>
+        <span class="n">camera_command_client</span><span class="p">(</span><span class="n">camera</span><span class="o">=</span><span class="s1">&#39;head_camera&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">camera_command_client</span><span class="p">(</span><span class="n">camera</span><span class="o">=</span><span class="s1">&#39;right_hand_camera&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid Argument. Cam must be &#39;arm&#39; or &#39;head&#39;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="camera_command_client"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.camera_command_client">[docs]</a><span class="k">def</span> <span class="nf">camera_command_client</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    based on https://www.aransena.com/blog/2018/1/11/rethink-robotics-sawyer-camera-access</span>
+<span class="sd">    client to process Sawyer camera commands</span>
+<span class="sd">    :param camera:</span>
+<span class="sd">    :param status:</span>
+<span class="sd">    :param timeout:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="s1">&#39;/io/internal_camera/&#39;</span> <span class="o">+</span> <span class="n">camera</span> <span class="o">+</span> <span class="s1">&#39;/command&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cam_control</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="s1">&#39;/io/internal_camera/&#39;</span> <span class="o">+</span> <span class="n">camera</span> <span class="o">+</span> <span class="s1">&#39;/command&#39;</span><span class="p">,</span> <span class="n">IOComponentCommandSrv</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">IOComponentCommand</span><span class="p">()</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;set&#39;</span>
+        <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="s1">&#39;{&quot;signals&quot;: {&quot;camera_streaming&quot;: {&quot;data&quot;: [true], &quot;format&quot;: {&quot;type&quot;: &quot;bool&quot;}}}}&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="s1">&#39;{&quot;signals&quot;: {&quot;camera_streaming&quot;: {&quot;data&quot;: [false], &quot;format&quot;: {&quot;type&quot;: &quot;bool&quot;}}}}&#39;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">cam_control</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="n">resp</span>
+    <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Service call failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="put_text"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.put_text">[docs]</a><span class="k">def</span> <span class="nf">put_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">bg_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="n">text_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write text to Sawyer&#39;s display screen</span>
+
+<span class="sd">    get emojis here: https://emojiisland.com/pages/free-download-emoji-icons-png</span>
+
+<span class="sd">    :param text:  string- test to displya</span>
+<span class="sd">    :param bg_color:  (b,g,r)- background color</span>
+<span class="sd">    :param text_color:  (b,g,r)- text color</span>
+<span class="sd">    :param scale:  float- font size</span>
+<span class="sd">    :param thickness:  float- font thickness</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">disp</span> <span class="o">=</span> <span class="n">intera_interface</span><span class="o">.</span><span class="n">HeadDisplay</span><span class="p">()</span>
+
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">600</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+    <span class="n">b</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">bg_color</span>
+    <span class="n">img</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+    <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
+    <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+    <span class="n">font</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_DUPLEX</span>
+
+    <span class="n">textsize</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTextSize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">thickness</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">textX</span> <span class="o">=</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">textsize</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">textY</span> <span class="o">=</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">textsize</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="p">(</span><span class="n">textX</span><span class="p">,</span> <span class="n">textY</span><span class="p">),</span> <span class="n">font</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">text_color</span><span class="p">,</span> <span class="n">thickness</span><span class="p">)</span>
+
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">&#39;temp.png&#39;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+    <span class="n">disp</span><span class="o">.</span><span class="n">display_image</span><span class="p">(</span><span class="s1">&#39;temp.png&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;temp.png&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="display_png"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.display_png">[docs]</a><span class="k">def</span> <span class="nf">display_png</span><span class="p">(</span><span class="n">img_name</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays a png image from imagaes/display directory on Sawyer&#39;s screen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">disp</span> <span class="o">=</span> <span class="n">intera_interface</span><span class="o">.</span><span class="n">HeadDisplay</span><span class="p">()</span>
+
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">600</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+    <span class="n">b</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">bg_color</span>
+    <span class="n">img</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+    <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
+    <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+    <span class="c1"># sloppy way to get paths to display images- don&#39;t use but may be useful in other nodes</span>
+    <span class="n">img_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+    <span class="n">img_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">img_dir</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="s1">&#39;display&#39;</span><span class="p">)</span>
+    <span class="n">img_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">img_dir</span><span class="p">,</span> <span class="n">img_name</span><span class="p">)</span>
+    <span class="n">pic</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_UNCHANGED</span><span class="p">)</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">pic</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">3</span><span class="p">]</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">h</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">alpha</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]:</span>
+                <span class="n">pic</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">offh</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">offw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">img</span><span class="p">[</span><span class="n">offh</span><span class="p">:(</span><span class="n">offh</span> <span class="o">+</span> <span class="n">pic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">offw</span><span class="p">:(</span><span class="n">offw</span> <span class="o">+</span> <span class="n">pic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pic</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">&#39;temp.png&#39;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+    <span class="n">disp</span><span class="o">.</span><span class="n">display_image</span><span class="p">(</span><span class="s1">&#39;temp.png&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;temp.png&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_exposure"><a class="viewcode-back" href="../../libraries.html#the_mighty_sawyer.imagelib.set_exposure">[docs]</a><span class="k">def</span> <span class="nf">set_exposure</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    sets exposure of selected camera</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cam</span> <span class="o">==</span> <span class="s1">&#39;arm&#39;</span><span class="p">:</span>
+        <span class="n">cam</span> <span class="o">=</span> <span class="s1">&#39;right_hand_camera&#39;</span>
+    <span class="k">elif</span> <span class="n">cam</span> <span class="o">==</span> <span class="s1">&#39;head&#39;</span><span class="p">:</span>
+        <span class="n">cam</span> <span class="o">=</span> <span class="s1">&#39;head_camera&#39;</span>
+
+    <span class="n">io</span> <span class="o">=</span> <span class="n">intera_io</span><span class="o">.</span><span class="n">IODeviceInterface</span><span class="p">(</span><span class="s1">&#39;internal_camera&#39;</span><span class="p">,</span> <span class="n">cam</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">set_signal_value</span><span class="p">(</span><span class="s1">&#39;set_exposure&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># def display_image(img):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Displays an image from imagaes/display directory on Sawyer&#39;s screen.</span>
+<span class="c1">#     TODO need to test if __file__ path is library or node calling library</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     disp = intera_interface.HeadDisplay()</span>
+<span class="c1">#</span>
+<span class="c1">#     # sloppy way to get paths to display images- don&#39;t use but may be useful in other nodes</span>
+<span class="c1">#     img_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))</span>
+<span class="c1">#     img_dir = os.path.join(img_dir, &#39;images&#39;, &#39;display&#39;)</span>
+<span class="c1">#     disp.display_image(os.path.join(img_dir, &#39;blank_screen.png&#39;))</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Mike Lee, Kevin Kleczka, Michael Rencheck, Shan Kahn.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

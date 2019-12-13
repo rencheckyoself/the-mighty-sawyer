@@ -1,0 +1,261 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>The Mighty Sawyer &#8212; The Mighty Sawyer 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Test" href="test.html" />
+    <link rel="prev" title="The Mighty Sawyer API" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="the-mighty-sawyer">
+<h1>The Mighty Sawyer<a class="headerlink" href="#the-mighty-sawyer" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="project-overview">
+<h1>Project Overview<a class="headerlink" href="#project-overview" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div>What you’re looking at is a ghost, once alive but now deceased. Once upon a time, it was a cornhole stadium that housed a professional cornhole league club known as the Evanston Zephyrs. Now it houses nothing but memories and a wind that stirs in the high grass of what was once an outfield, a wind that sometimes bears a faint, ghostly resemblance to the roar of a crowd that once sat here. We’re back in time now, when the Evanston Zephyrs were still a part of the American League, and this mausoleum of memories was an honest-to-Pete stadium. But since this is strictly a story of make believe, it has to start this way: once upon a time, in Evanston, Illinois, it was tryout day. And though he’s not yet on the field, you’re about to meet a most unusual fella, a one-armed player named Sawyer. (adapted from the opening narration of the <em>The Twilight Zone</em> episode <a class="reference external" href="https://en.wikipedia.org/wiki/The_Mighty_Casey">“The Mighty Casey”</a>)</div></blockquote>
+<p>This project includes three major parts:</p>
+<ol class="simple">
+<li><a class="reference external" href="#computer-vision">Computer vision</a></li>
+<li><a class="reference external" href="#throwing">Throwing</a></li>
+<li><a class="reference external" href="#manipulation">Manipulation</a></li>
+</ol>
+</div>
+<div class="section" id="package-layout">
+<h1>Package layout:<a class="headerlink" href="#package-layout" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">action</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">config</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">doc</span><span class="o">/</span>
+		<span class="o">|-</span> <span class="n">conf</span><span class="o">.</span><span class="n">py</span>
+		<span class="o">|-</span> <span class="n">index</span><span class="o">.</span><span class="n">rst</span>
+	<span class="o">|-</span> <span class="n">launch</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">msg</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">nodes</span><span class="o">/</span>
+		<span class="o">|-</span> <span class="n">traj_with_moveit</span>
+		<span class="o">|-</span> <span class="n">traj_with_sawyer</span>
+	<span class="o">|-</span> <span class="n">rviz</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">scripts</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">src</span><span class="o">/</span>
+		<span class="o">|-</span> <span class="n">the_mighty_sawyer</span><span class="o">/</span>
+			<span class="o">|-</span> <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+	<span class="o">|-</span> <span class="n">srv</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">test</span><span class="o">/</span>
+	<span class="o">|-</span> <span class="n">CMakeLists</span><span class="o">.</span><span class="n">txt</span>
+	<span class="o">|-</span> <span class="n">README</span><span class="o">.</span><span class="n">md</span>
+	<span class="o">|-</span> <span class="n">package</span><span class="o">.</span><span class="n">xml</span>
+	<span class="o">|-</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="submitted-code">
+<h1>Submitted code:<a class="headerlink" href="#submitted-code" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="instructions-to-run-code">
+<h1>Instructions to run code<a class="headerlink" href="#instructions-to-run-code" title="Permalink to this headline">¶</a></h1>
+<p>General ROS directions:</p>
+<ol class="simple">
+<li>Set up workspace and clone repo:</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="o">~/</span><span class="n">catkin_ws</span><span class="o">/</span><span class="n">src</span>
+<span class="n">cd</span> <span class="o">~/</span><span class="n">catkin_ws</span><span class="o">/</span><span class="n">src</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ME495</span><span class="o">-</span><span class="n">EmbeddedSystems</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li>catkin and source</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">catkin_ws</span>
+<span class="n">catkin_make</span>
+<span class="n">source</span> <span class="n">devel</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li>Launching project</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">roslaunch</span> <span class="n">the_mighty_sawyer</span> <span class="n">play_cornhole</span><span class="o">.</span><span class="n">launch</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="computer-vision">
+<h1>Computer Vision<a class="headerlink" href="#computer-vision" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="throwing">
+<h1>Throwing<a class="headerlink" href="#throwing" title="Permalink to this headline">¶</a></h1>
+<p>Since Sawyer is not the fastest robot, the throwing motion attempts to leverage as many joints as possible while also taking advantage of the full arm length. Sawyer executes an overhand throw, by positioning the arm behind it self. It then actuates joint 1, 3, and 5 to maximize velocity in the direction of the throw. During the trajectory, the grippers will open near the peak, releasing the bag. <strong>Be sure that Sawyer’s arm can be fully extended in all directions without hitting anything in the environment before running.</strong></p>
+<p>Sawyer will also attempt to target the cornhole board and it will also make adjustments based on the result of each throw by referencing the respective April tags. These features are both accomplished using the distance and heading calculations between sawyer, the board, and the most recently thrown bag.</p>
+</div>
+<div class="section" id="manipulation">
+<h1>Manipulation<a class="headerlink" href="#manipulation" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="notes">
+<h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lessons-learned">
+<h2>Lessons Learned<a class="headerlink" href="#lessons-learned" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Throwing is a task so intuitive for a human that we rarely stop to realize the complexities of what is actually happening. The amount of hand control and sensory feedback a person has and can actually interpret far surpasses what a robot has access to. That being said, the great advantage a robot has over a person is the precision and repeatability.</li>
+</ul>
+</div>
+<div class="section" id="future-work">
+<h2>Future Work<a class="headerlink" href="#future-work" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The targeting features are currently restricted to the area to Sawyer’s front left. For further development, we would ideally have the head camera scan until it found the board then select a throwing configuration based on that.</li>
+<li>Also we would like to try to remove the dependency on April tags. This may prove to be too difficult for the bag detection with Sawyer’s built in cameras, but the board should be possible.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="development-notes">
+<h1>Development Notes<a class="headerlink" href="#development-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>Fork the GitHub Classroom repository from <a class="reference external" href="https://github.com/ME495-EmbeddedSystems/the-mighty-sawyer.git">here</a>.  This means that you are creating a clone of the entire Classroom repo and placing a copy in your own personal GitHub repo; this is called a fork.  You will be mostly working with the fork you have created during development.</p>
+<p>Once you have forked our official project repo to your personal repo, you can now clone your personal repo to your local machine.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">YOUR_USERNAME</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">wstool</span> <span class="pre">set</span></code> so that your personal repo is added to the <code class="docutils literal notranslate"><span class="pre">.rosinstall</span></code> file.</p>
+<p>To be able to interact with the official GitHub Classroom project repo, we have to take an additional step – ie. add a remote upstream.</p>
+<ol class="simple">
+<li>Open Terminal.</li>
+<li>You can see the current configured remote repo for your fork by</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">remote</span> <span class="o">-</span><span class="n">v</span>
+<span class="o">&gt;</span> <span class="n">origin</span>  <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">YOUR_USERNAME</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span> <span class="p">(</span><span class="n">fetch</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">origin</span>  <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">YOUR_USERNAME</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span> <span class="p">(</span><span class="n">push</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li>Now you can set up a new remote <code class="docutils literal notranslate"><span class="pre">upstream</span></code> repo that can be synced with your fork</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">upstream</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ME495</span><span class="o">-</span><span class="n">EmbeddedSystems</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li>Check whether you did this successfully</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">remote</span> <span class="o">-</span><span class="n">v</span>
+<span class="o">&gt;</span> <span class="n">origin</span>	<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">YOUR_USERNAME</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span> <span class="p">(</span><span class="n">fetch</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">origin</span>	<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">YOUR_USERNAME</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span> <span class="p">(</span><span class="n">push</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">upstream</span>	<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ME495</span><span class="o">-</span><span class="n">EmbeddedSystems</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span> <span class="p">(</span><span class="n">fetch</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">upstream</span>	<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ME495</span><span class="o">-</span><span class="n">EmbeddedSystems</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">.</span><span class="n">git</span> <span class="p">(</span><span class="n">push</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="syncing-your-fork-with-the-upstream-repo">
+<h2>Syncing your fork with the upstream repo<a class="headerlink" href="#syncing-your-fork-with-the-upstream-repo" title="Permalink to this headline">¶</a></h2>
+<p>If the <code class="docutils literal notranslate"><span class="pre">upstream</span></code> manages to somehow become ahead of your fork repo, here’s how you can catch up.</p>
+<ol class="simple">
+<li>Open Terminal.</li>
+<li></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">roscd</span> <span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">catkin_ws</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">the</span><span class="o">-</span><span class="n">mighty</span><span class="o">-</span><span class="n">sawyer</span><span class="o">/</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li>Fetch the branches and commits from <code class="docutils literal notranslate"><span class="pre">upstream</span></code>. This step will be store the commits in a local branch, <code class="docutils literal notranslate"><span class="pre">upstream/master</span></code>.</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">fetch</span> <span class="n">upstream</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li>Switch to <code class="docutils literal notranslate"><span class="pre">master</span></code> branch locally</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">master</span>
+</pre></div>
+</div>
+<ol class="simple">
+<li>Now you can merge the changes from <code class="docutils literal notranslate"><span class="pre">upstream/master</span></code> to your <em>local</em> <code class="docutils literal notranslate"><span class="pre">master</span></code>.  This brings your fork’s master branch into sync with the <code class="docutils literal notranslate"><span class="pre">upstream</span></code> repo – <em>without</em> losing your local changes.</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">merge</span> <span class="n">upstream</span><span class="o">/</span><span class="n">master</span>
+</pre></div>
+</div>
+<p>If you notice a “fast-forward” that just means you have not had any unique local commits.
+6. If you’d like to also push these updates you made locally to your personal repo (recommended), you can simply do that by</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">push</span> <span class="o">-</span><span class="n">u</span> <span class="n">origin</span> <span class="n">master</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">The Mighty Sawyer API</a></li>
+      <li>Next: <a href="test.html" title="next chapter">Test</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Mike Lee, Kevin Kleczka, Michael Rencheck, Shan Kahn.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/README.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
