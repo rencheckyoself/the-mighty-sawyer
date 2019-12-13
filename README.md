@@ -164,8 +164,10 @@ TMS's high-level states are tracked within `sawyer_main_client` in the `nodes` f
 
 # Media
 [Final Video on YouTube](https://www.youtube.com/watch?v=GHv42RLQk-g&t=5s)
+
 [Bag Handoff Demo](https://youtu.be/lZPUK0xGsRU)
+
 [Targeting Demo](https://youtu.be/ffp8pguVMzQ)
 
 # References
-[Sphinx API](https://rencheckyoself.github.io/the-mighty-sawyer/)
+[Library API](https://rencheckyoself.github.io/the-mighty-sawyer/)
