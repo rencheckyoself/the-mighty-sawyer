@@ -10,6 +10,10 @@ SUBSCRIBES:
 
 SERVICES:
 grab_bag- Empty/Empty, initiate process to grab beanbag from player
+get_team- returns the color of the team sawyer is playing for
+
+PROXIES:
+/actuate_gripper (bool) actuates the grippers; 1 = open, 0 = close
 """
 import rospy
 import os
@@ -173,5 +177,3 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
-
-

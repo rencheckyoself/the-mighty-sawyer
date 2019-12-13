@@ -3,6 +3,11 @@
 """
 Main interface between The Mighty Sawyer (TMS) and AprilTags.
 Also interfaces with TMS's screen and performs the scorekeeping for a cornhole game.
+
+SERVICES:
+    /locate_board (Pose) sends the most recent pose of the board april tag
+    /locate_recent_bag (Pose) sends the pose of the most recent bag that Sawyer threw
+    /clear_board resets the game state. This should be called after Sawyer throws 4 bags.
 """
 
 import rospy

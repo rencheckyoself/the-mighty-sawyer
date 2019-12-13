@@ -13,12 +13,6 @@ The Mighty Sawyer
    README
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Nodes:
-
-   nodes
-
-.. toctree::
   :maxdepth: 2
   :caption: API:
 

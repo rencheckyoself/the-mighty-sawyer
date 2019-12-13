@@ -11,6 +11,11 @@ SERVICES:
     /actuate_gripper: actuates gripper to open/close positions
     /target_board: targets the board
     /make_adjustments: makes targeting/throwing adjustments
+
+PROXIES:
+    /locate_board: This services returns the pose of the cornhole board
+    /locate_recent_bag: This service returns the pose of the most recent bag thrown by Sawyer
+    /get_team: Returns the color of the team sawyer is playing on
 """
 
 from __future__ import division

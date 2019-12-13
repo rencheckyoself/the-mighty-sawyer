@@ -1,7 +1,7 @@
 from .imagelib import (
 	display_png,
 	put_text,
-	set_exposure, 
+	set_exposure,
 	switch_camera)
 
 from .sawyer_controller import (
@@ -10,4 +10,4 @@ from .sawyer_controller import (
 from .tms_helper_functions import (
 	find_true,
 	get_dist,
-	get_p,arams_from_yaml) 
+	get_params_from_yaml) 

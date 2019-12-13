@@ -10,10 +10,9 @@ This project uses Sawyer's wrist camera and the `find_object_2d` package to dete
 
 ## Overview
 This project included four major parts:
-1. [Manipulation](#manipulation)
-2. [Computer vision](#computer-vision)
-3. [Throwing](#throwing)
-4. [Human robot interaction](#human-robot-interaction)
+1. [Computer vision](#computer-vision)
+2. [Throwing](#throwing)
+3. [Human robot interaction](#human-robot-interaction)
 
 In addition, the team developed a [simple state machine](#simple-state-machine) and some gazebo simulation capabilities mostly for testing offline.
 
@@ -25,9 +24,6 @@ In addition, the team developed a [simple state machine](#simple-state-machine) 
 │   ├── settings.yaml
 │   ├── tags.yaml
 │   └── teams.yaml
-├── doc
-│   ├── conf.py
-│   └── index.rst
 ├── images
 │   ├── display
 │   │   ├── angry.png
@@ -48,19 +44,17 @@ In addition, the team developed a [simple state machine](#simple-state-machine) 
 │       ├── 6.png
 │       └── 7.png
 ├── launch
-│   ├── apriltags.launch
-│   ├── continuous_detection.launch
-│   ├── grab_bag.launch
-│   ├── play_cornhole.launch
-│   └── sawyer_sim.launch
+│   ├── apriltags.launch - included continuous_detection.launch and launches rviz
+│   ├── continuous_detection.launch - everything necessary for april tags
+│   ├── grab_bag.launch - launch node containing services to grab a bag
+│   ├── play_cornhole.launch - launch all nodes to play cornhole with sawyer
+│   └── sawyer_sim.launch - launch node containing services to move the arm in simulation
 ├── nodes
-│   ├── apriltag_pose
-│   ├── camera_converter
-│   ├── grab_bag_server
-│   ├── sawyer_main_client
-│   ├── sawyer_movement_server
-│   ├── traj_with_moveit
-│   └── traj_with_sawyer
+│   ├── apriltag_pose - provides services to get the pose from april tags
+│   ├── camera_converter - converts the camera image from Sawyer
+│   ├── grab_bag_server - provides service to grab the bag from a player
+│   ├── sawyer_main_client - main node containing the state machine
+│   └── sawyer_movement_server - provides services to move the arm and target
 ├── package.xml
 ├── README.md
 ├── rviz
@@ -69,24 +63,24 @@ In addition, the team developed a [simple state machine](#simple-state-machine) 
 │   ├── display_png.py
 │   ├── set_exposure.py
 │   ├── switch_camera.py
-│   └── test_movement_server.py
+│   └── test_movement_server.py - simple test script to test the movement services
 ├── setup.py
 ├── src
 │   └── the_mighty_sawyer
-│       ├── imagelib.py
+│       ├── imagelib.py - library with camera related functions
 │       ├── __init__.py
-│       ├── sawyer_controller.py
-│       ├── tms_helper_functions.py
-├── srv
-│   ├── EvaluateThrowResult.srv
-│   ├── ExecuteThrow.srv
-│   ├── GetPose.srv
-│   ├── GrabBag.srv
-│   ├── MoveToThrowPos.srv
-│   ├── SawyerStates.srv
-│   ├── TagPose.srv
-│   └── WaitForBag.srv
-└── test
+│       ├── sawyer_controller.py - library to move the arm
+│       └── tms_helper_functions.py - general purpose helper functions
+└── srv
+    ├── EvaluateThrowResult.srv
+    ├── ExecuteThrow.srv
+    ├── GetPose.srv
+    ├── GrabBag.srv
+    ├── MoveToThrowPos.srv
+    ├── SawyerStates.srv
+    ├── TagPose.srv
+    └── WaitForBag.srv
+
 ```
 
 # Instructions to run code
@@ -107,7 +101,7 @@ source devel/setup.bash
 roslaunch the_mighty_sawyer play_cornhole.launch
 ```
 
-# Manipulation
+Note: Will need to take images of your own bean bags in order for the visual detection to work properly. Also will need to generate and add your own april tags.
 
 # Notes
 ## Lessons Learned
@@ -125,7 +119,12 @@ Since Sawyer is not the fastest robot, the throwing motion attempts to leverage 
 Sawyer will also attempt to target the cornhole board and it will also make adjustments based on the result of each throw by referencing the respective April tags. These features are both accomplished using the distance and heading calculations between sawyer, the board, and the most recently thrown bag.
 
 # Human robot interaction
+Sawyer relies on a human player to show it a bag using the wrist camera and place it in the gripper when instructed by the screen. Sawyer will assume it is on the team of the first color bag you try to hand it. One it has a team set, it can detect when you hand it the wrong color bag.
+
+It is also able to respond to a human player moving the board mid game. If Sawyer detects the board has shifted too far from the previously known position, it will display and angry emoji and retarget before the next throw.
 
 # Simple state machine
 
 # References
+
+[Final Video on YouTube](https://www.youtube.com/watch?v=GHv42RLQk-g&t=5s)
