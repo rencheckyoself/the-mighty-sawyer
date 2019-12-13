@@ -126,5 +126,5 @@ It is also able to respond to a human player moving the board mid game. If Sawye
 # Simple state machine
 
 # References
-
+[Sphinx API](https://rencheckyoself.github.io/the-mighty-sawyer/)
 [Final Video on YouTube](https://www.youtube.com/watch?v=GHv42RLQk-g&t=5s)
