@@ -47,11 +47,17 @@ class MoveArm(object):
         self.overhand_throw_offset = 0
 
     def initializaton(self):
+        """
+        Higher-level function that performs Sawyer-related initializations.
+        """
         self.EnableRobot()
         rospy.sleep(.5)
         self.InitializeGripper()
 
     def EnableRobot(self):
+        """
+        Enables the Sawyer robot.
+        """
         self.rs.enable()
 
     def reset_default_settings(self):

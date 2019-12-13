@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-This file acts as a unit test for the sawyer movement server services.
-This should perform a generic overhand throw to the default location.
+This file acts as a "unit test" for the sawyer movement server services. This
+should perform a generic overhand throw.
 """
 
 from __future__ import division

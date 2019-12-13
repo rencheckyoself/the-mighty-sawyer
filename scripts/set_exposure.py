@@ -5,7 +5,7 @@ Script to display a png from images/display folder on the screen
 """
 
 import sys
-from the_mighty_sawyer.imagelib import set_exposure
+from the_mighty_sawyer import set_exposure
 import rospy
 
 if __name__ == '__main__':

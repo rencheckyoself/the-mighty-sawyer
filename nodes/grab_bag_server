@@ -13,7 +13,7 @@ grab_bag- Empty/Empty, initiate process to grab beanbag from player
 """
 import rospy
 import os
-from the_mighty_sawyer.imagelib import switch_camera, put_text
+from the_mighty_sawyer import switch_camera, put_text
 from the_mighty_sawyer.srv import GrabBag
 from std_msgs.msg import Bool, Float32MultiArray, Int8
 import intera_io

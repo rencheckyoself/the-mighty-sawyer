@@ -18,20 +18,18 @@ from cv_bridge import CvBridge, CvBridgeError
 
 class CameraConverter(object):
     """
-    
+    A class that converts the sawyer hand camera feed to a format usable with find_object_2d
     """
 
     def __init__(self):
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/io/internal_camera/right_hand_camera/image_rect", Image, self.image_callback)
-        self.image_pub = rospy.Publisher("image_converted", Image, queue_size=10)
+        self.image_pub = rospy.Publisher("/image_converted", Image, queue_size=10)
 
     def image_callback(self, data):
         """
-
-        :param data:
-        :return:
+        Callback for subscribing to the sawyer hand camera
         """
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "mono8")

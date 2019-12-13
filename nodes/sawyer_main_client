@@ -27,26 +27,13 @@ from the_mighty_sawyer import (
 from the_mighty_sawyer.srv import (
 	GetPose)
 
-# from the_mighty_sawyer.srv import (
-# 	WaitForBag,
-# 	GrabBag2,
-# 	MoveToThrowPos,
-# 	ExecuteThrow,
-# 	EvaluateThrowResult,
-# 	WaitForBagResponse,
-# 	GrabBag2Response,
-# 	MoveToThrowPosResponse,
-# 	ExecuteThrowResponse,
-# 	EvaluateThrowResultResponse)
-
-
 ####################################################
 # 	SERVICES :: sawyer_movement_server
 ####################################################
 
 def tms_initialization():
 	"""
-	Higher-level function that initializes The Mighty Sawyer
+	Higher-level function that initializes The Mighty Sawyer with various Services
 	"""
 	print("Initializing...")
 	start_up_client()
@@ -75,8 +62,6 @@ def go_to_home_pos_client():
 	"""
 	This is the client for the Service 'go_to_home_pos' provided by sawyer_movement_server
 	"""
-	# if srv_name is not 'go_to_home_pos':
-	# 	pass
 	srv_name = 'go_to_home_pos'
 	rospy.wait_for_service(srv_name)
 	try:
@@ -92,7 +77,6 @@ def target_board_client():
 	"""
 	This is the client for the Service 'target_board' provided by sawyer_movement_server
 	"""
-
 	srv_name = 'target_board'
 	rospy.wait_for_service(srv_name)
 	try:
@@ -128,11 +112,6 @@ def make_adjustments_client(srv_name):
 	if srv_name is not 'make_adjustments':
 		pass
 
-	# _sub_pose = rospy.Subcriber('/pose_april_tags', PoseWithCovariance, pose_callback)
-
-	# _pose_board = Pose()
-	# _pose_bag = Pose()
-
 	go_to_home_pos_client()
 
 	rospy.wait_for_service(srv_name)
@@ -144,10 +123,6 @@ def make_adjustments_client(srv_name):
 		return _srv_make_adjustments
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
-
-
-	# def pose_callback():
-	# 	pass
 
 
 ####################################################
@@ -175,9 +150,6 @@ def clear_board_client():
 	"""
 	This is the client for the Service 'clear_board' provided by grab_bag_server
 	"""
-	# if srv_name is not 'make_adjustments':
-	# 	pass
-
 	srv_name = 'clear_board'
 	rospy.wait_for_service(srv_name)
 	try:
@@ -188,27 +160,6 @@ def clear_board_client():
 		return _srv_clear_board
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
-
-####################################################
-# 	SERVICES :: score_keeping_server???
-####################################################
-
-# def evaluate_throw_result_client(srv_name):
-# 	"""
-# 	This is the client for the Service 'evaluate_throw_result' provided by
-# 	"""
-# 	rospy.wait_for_service(srv_name)
-# 	try:
-# 		_srv_evaluate_throw_result = rospy.ServiceProxy(
-# 										srv_name,
-# 										EvaluateThrowResult)
-# 		print("I am going to evaluate my throw...")
-# 		_srv_evaluate_throw_result()
-# 		rospy.sleep(1)
-# 		return _srv_evaluate_throw_result
-# 	except rospy.ServiceException, e:
-# 		print "Service call failed: %s"%e
-
 
 def sawyer_main_client():
 	"""
@@ -222,13 +173,12 @@ def sawyer_main_client():
 	_srv_names = [
 						'grab_bag',
 						'overhand_throw',
-						# 'evaluate_throw_result',
 						'make_adjustments']
 
 	num_of_states = len(_srv_names)
 	state_idx = 0
 	sawyer_state = _srv_names[state_idx]
-	count = 0
+	_count = 0
 
 	tms_initialization()
 
@@ -243,60 +193,25 @@ def sawyer_main_client():
 			tms_initialization()
 		elif (sawyer_state is 'grab_bag'):
 			grab_bag_client(sawyer_state)
-			# update_state()
 			state_idx = (state_idx + 1) % num_of_states
 			sawyer_state = _srv_names[state_idx]
 			print("I am now ready to transition to state: " + str(sawyer_state))
-
-		# elif (sawyer_state is 'target_board'):
-		# 	target_board_client(sawyer_state)
-		# 	# update_state()
-		# 	state_idx = (state_idx + 1) % num_of_states
-		# 	sawyer_state = _srv_names[state_idx]
-		# 	print("I am now ready to transition to state: " + str(sawyer_state))
-
-		# elif (sawyer_state is 'go_to_home_pos'):
-		# 	go_to_home_pos_client(sawyer_state)
-		# 	# update_state()
-		# 	state_idx = (state_idx + 1) % num_of_states
-		# 	sawyer_state = _srv_names[state_idx]
-		# 	print("I am now ready to transition to state: " + str(sawyer_state))
-
 		elif (sawyer_state is 'overhand_throw'):
 			overhand_throw_client(sawyer_state)
-			# update_state()
 			state_idx = (state_idx + 1) % num_of_states
 			sawyer_state = _srv_names[state_idx]
 			print("I am now ready to transition to state: " + str(sawyer_state))
-
-		# elif (sawyer_state is 'evaluate_throw_result'):
-		# 	evaluate_throw_result_client(sawyer_state)
-		# 	# state_idx, sawyer_state = update_state(state_idx, sawyer_state)
-		# 	state_idx = (state_idx + 1) % num_of_states
-		# 	sawyer_state = _srv_names[state_idx]
-		# 	print("I am now ready to transition to state: " + str(sawyer_state))
-
-		#-- make_adjustments
 		elif (sawyer_state is 'make_adjustments'):
 			make_adjustments_client(sawyer_state)
-			# update_state()
 			state_idx = (state_idx + 1) % num_of_states
 			sawyer_state = _srv_names[state_idx]
 
-			count = count + 1
-
-			if (count % 4 == 0):
+			_count = _count + 1
+			if (_count % 4 == 0):
 				clear_board_client()
 			print("I am now ready to transition to state: " + str(sawyer_state))
 
-
 		rate.sleep()
-
-	# def update_state():
-	# 	state_idx = (state_idx + 1) % num_of_states
-	# 	sawyer_state = _srv_names[state_idx]
-	# 	print("I am now ready to transition to state: " + str(sawyer_state))
-
 
 if __name__ == '__main__':
 	try:

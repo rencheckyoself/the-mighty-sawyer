@@ -82,11 +82,10 @@ add_service_files(
   ExecuteThrow.srv
   GetPose.srv
   GrabBag.srv
-  GrabBag2.srv
   MoveToThrowPos.srv
   SawyerStates.srv
-  WaitForBag.srv
   TagPose.srv
+  WaitForBag.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -99,10 +98,10 @@ add_action_files(
 generate_messages(
   DEPENDENCIES
   actionlib_msgs
+  apriltag_ros
   geometry_msgs
   sensor_msgs
-  std_msgs
-  apriltag_ros # Or other packages containing msgs
+  std_msgs # Or other packages containing msgs
 )
 
 ## Generate .world, .urdf files from xacro files
@@ -160,6 +159,7 @@ catkin_package(
   CATKIN_DEPENDS
     actionlib
     actionlib_msgs
+    apriltag_ros
     cv_bridge
     geometry_msgs
     joint_state_publisher
@@ -171,7 +171,6 @@ catkin_package(
     sensor_msgs
     std_msgs
     xacro
-    apriltag_ros
 )
 
 ###########
@@ -225,23 +224,17 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
+  nodes/apriltag_pose
   nodes/camera_converter
-  nodes/dummy_node1
   nodes/grab_bag_server
-  nodes/sawyer_main_client.py
+  nodes/sawyer_main_client
   nodes/sawyer_movement_server
-  nodes/sawyer_states
   nodes/traj_with_moveit
   nodes/traj_with_sawyer
-  scripts/beanbag_handoff
-  scripts/pub_locate_board
-  scripts/sub_locate_board
+  scripts/display_png.py
+  scripts/set_exposure.py
   scripts/switch_camera.py
-  #scripts/test_action_server_client
-  #scripts/test_action_server_server
   scripts/test_movement_server.py
-  scripts/throwing_beanbag
-  src/${PROJECT_NAME}/imagelib.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
