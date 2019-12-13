@@ -78,15 +78,10 @@ catkin_python_setup()
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  EvaluateThrowResult.srv
-  ExecuteThrow.srv
   GetPose.srv
   GrabBag.srv
-  MoveToThrowPos.srv
-  SawyerStates.srv
   SetTeam.srv
   TagPose.srv
-  WaitForBag.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -275,9 +270,9 @@ install(PROGRAMS
 # endif()
 
 if(CATKIN_ENABLE_TESTING)
-find_package(rostest REQUIRED)
-add_rostest(test/hit_board.test)
-add_rostest(test/board_moved.test)
+  find_package(rostest REQUIRED)
+  add_rostest(test/hit_board.test)
+  add_rostest(test/board_moved.test)
 endif()
 
 ## Add folders to be run by python nosetests

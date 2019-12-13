@@ -51,12 +51,13 @@
   <build_depend>genmsg</build_depend>
   <build_depend>message_runtime</build_depend>
   <build_depend>robot_state_publisher</build_depend>
+  <build_depend>rostest</build_depend>
   <build_depend>rviz</build_depend>
   <build_depend>joint_state_publisher</build_depend>
   <build_export_depend>cv_bridge</build_export_depend>
   <build_export_depend>message_runtime</build_export_depend>
-  <build_export_depend>robot_state_publisher</build_export_depend>
   <build_export_depend>joint_state_publisher</build_export_depend>
+  <build_export_depend>robot_state_publisher</build_export_depend>
   <build_export_depend>rviz</build_export_depend>
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>cv_bridge</exec_depend>
