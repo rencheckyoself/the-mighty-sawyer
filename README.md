@@ -138,7 +138,7 @@ It is also able to respond to a human player moving the board mid game. If TMS d
 	4. Update score
 	5. Goto 1 (unless there is a winner)
 
-``` `sawyer_main_client`
+```
 [0: Initialization] -->  [1: Grab]  -->  [2: Throw]  -->  [3: Update]
 							 ^									 |	
 							 |-----------------------------------| 
