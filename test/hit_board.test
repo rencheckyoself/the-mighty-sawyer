@@ -1,0 +1,16 @@
+<launch>
+
+<include file="$(find the_mighty_sawyer)/launch/continuous_detection.launch" />
+<node name="apriltag_pose" pkg="the_mighty_sawyer" type="apriltag_pose" output="screen"/>
+
+<node name="camera_converter" pkg="the_mighty_sawyer" type="camera_converter"/>
+  <node name="find_object_2d" pkg="find_object_2d" type="find_object_2d" args="image:=image_converted">
+      <param name="~gui" value="false"/>
+      <param name="~objects_path" value="$(find the_mighty_sawyer)/images/vision" />
+  </node>
+<node name="grab_bag_server" pkg="the_mighty_sawyer" type="grab_bag_server"/>
+
+
+<test test-name="hit_board" pkg="the_mighty_sawyer" type="hit_board_tests.py" />
+
+</launch>
