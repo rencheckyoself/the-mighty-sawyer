@@ -1,20 +1,13 @@
 #!/usr/bin/env python
 """
 bsed on: https://github.com/m-elwin/me495_practices
-allows testing of board locations
+tests if board has remained stationary
+apriltags.launch should have been run before running this test
 """
 import unittest
 import rospy, math
 from the_mighty_sawyer.srv import SetTeam, TagPose
-import std_msgs.msg
-from std_srvs.srv import Empty, EmptyResponse
-
-
-def get_dist(pose1, pose2):
-    """
-    Calculates the Euclidean distance between two poses.
-    """
-    return math.sqrt((pose1.position.x - pose2.position.x)**2 + (pose1.position.y - pose2.position.y)**2 + (pose1.position.z - pose2.position.z)**2)
+from the_mighty_sawyer.tms_helper_functions import get_dist
 
 
 class HardCaseNode(unittest.TestCase):
@@ -25,20 +18,20 @@ class HardCaseNode(unittest.TestCase):
 
     def test_board_moved(self):
         """
-        tests if the board has moved
+        tests if the board has remained stationary
         place board, run test, press enter to test if new pos within move thresh
         """
+        rospy.wait_for_service('locate_board')
         loc_board = rospy.ServiceProxy('locate_board', TagPose)
-        pos = loc_board.call(Empty)
+        pos = loc_board()
         rospy.loginfo(pos)
         raw_input('Press enter when board in second position.')
-        new_pos = loc_board.call(Empty)
+        new_pos = loc_board()
         rospy.loginfo(new_pos)
-        dist = get_dist(pos, new_pos)
+        dist = get_dist(pos.pose, new_pos.pose)
         rospy.loginfo(dist)
         self.assertLess(dist, self.thresh)
 
 
 if __name__ == "__main__":
-    import rostest
-    rostest.rosrun('me495_practices', "hard_case_node", HardCaseNode)
+    unittest.main()
