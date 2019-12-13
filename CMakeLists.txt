@@ -84,15 +84,15 @@ add_service_files(
   GrabBag.srv
   MoveToThrowPos.srv
   SawyerStates.srv
+  SetTeam.srv
   TagPose.srv
   WaitForBag.srv
 )
 
 ## Generate actions in the 'action' folder
-add_action_files(
-  FILES
-  Throw.action
-)
+#add_action_files(
+#  FILES
+#)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -229,8 +229,6 @@ install(PROGRAMS
   nodes/grab_bag_server
   nodes/sawyer_main_client
   nodes/sawyer_movement_server
-  nodes/traj_with_moveit
-  nodes/traj_with_sawyer
   scripts/display_png.py
   scripts/set_exposure.py
   scripts/switch_camera.py
@@ -273,8 +271,14 @@ install(PROGRAMS
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_me495_urdf.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+#  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
+
+if(CATKIN_ENABLE_TESTING)
+find_package(rostest REQUIRED)
+add_rostest(test/hit_board.test)
+add_rostest(test/board_moved.test)
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

@@ -18,7 +18,7 @@ PROXIES:
 import rospy
 import os
 from the_mighty_sawyer import switch_camera, put_text
-from the_mighty_sawyer.srv import GrabBag
+from the_mighty_sawyer.srv import SetTeam
 from std_msgs.msg import Bool, Float32MultiArray, Int8
 import intera_io
 import intera_interface
@@ -43,6 +43,7 @@ class GrabBagServer(object):
         # ROS publishers/subscribers/services
         rospy.Service('grab_bag', Empty, self.grab_bag_callback)
         rospy.Service('get_team', Trigger, self.get_team_callback)
+        rospy.Service('set_team', SetTeam, self.set_team_callback)
         self.sub_find_object = rospy.Subscriber('objects', Float32MultiArray, self.find_object_callback)
         self.gripper_srv = rospy.ServiceProxy('actuate_gripper', SetBool)
 
@@ -140,6 +141,13 @@ class GrabBagServer(object):
         return Sawyer's team (red, blue)
         """
         return TriggerResponse(success=True, message=str(self.team))
+
+    def set_team_callback(self, data):
+        """
+        sets current team to value passed in. only used for testing.
+        """
+        self.team = data.str
+        return EmptyResponse
 
     def find_object_callback(self, data):
         """
