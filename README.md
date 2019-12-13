@@ -103,6 +103,7 @@ roslaunch the_mighty_sawyer play_cornhole.launch
 Note: Will need to take images of your own bean bags in order for the visual detection to work properly. Also will need to generate and add your own april tags.
 
 # Computer Vision
+In order to keep track of the cornhole board and bags positioned across the board, april tags are used as a means of identifying and extracting information of the board or bag's pose relative to the head camera. All april tags are part of the same tag family, 36h11, and each tag within this family is unique to allow Sawyer to distinguish tags between the board and all the different bags. These pose positions are used to assist in throwing and keeping track of score. Furthermore, detection of tags is designed in such a way that Sawyer will remember the last detected position of the tag if the tag is unable to be detected again. 
 
 # Throwing
 Since Sawyer is not the fastest robot, the throwing motion attempts to leverage as many joints as possible while also taking advantage of the full arm length. TMS executes an overhand throw, by positioning the arm behind it self. It then actuates joints 1, 3, and 5 to maximize velocity in the direction of the throw. During the trajectory, the grippers will open near the peak, releasing the bag. **Be sure that Sawyer's arm can be fully extended in all directions without hitting anything in the environment before running.**

@@ -147,7 +147,7 @@ class GrabBagServer(object):
         sets current team to value passed in. only used for testing.
         """
         self.team = data.str
-        return EmptyResponse
+        return []
 
     def find_object_callback(self, data):
         """
