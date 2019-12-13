@@ -6,7 +6,7 @@ args:  active_camera ('arm', 'head')
 """
 
 import sys
-from the_mighty_sawyer.imagelib import switch_camera
+from the_mighty_sawyer import switch_camera
 import rospy
 
 if __name__ == '__main__':

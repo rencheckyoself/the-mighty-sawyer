@@ -5,7 +5,7 @@ Script to display a png from images/display folder on the screen
 """
 
 import sys
-from the_mighty_sawyer.imagelib import switch_camera, display_png
+from the_mighty_sawyer import switch_camera, display_png
 import rospy
 
 if __name__ == '__main__':
