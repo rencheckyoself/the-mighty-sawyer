@@ -179,7 +179,7 @@ TMS's high-level states are tracked within `sawyer_main_client` in the `nodes` f
  - Also we would like to try to remove the dependency on AprilTags. This may prove to be too difficult for the bag detection with Sawyer's built in cameras, but the board should be possible.
 
 # Media
-[Final Video on YouTube](https://www.youtube.com/watch?v=GHv42RLQk-g&t=5s)
+[Final Video on YouTube](https://youtu.be/8cPoL4529aY)
 
 [Bag Handoff Demo](https://youtu.be/lZPUK0xGsRU)
 
